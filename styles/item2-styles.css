@@ -10,7 +10,7 @@
 }
 
 .ship {
-    background-color: red;
+    background-color: darkblue;
     height: 4vh;
     border: 1px black solid;
     aspect-ratio: 1;
@@ -19,12 +19,15 @@
 .ship-container {
     margin: 20px;
     width:200px;
+    padding:3px;
 }
 
-#select-message {
+.setup-error-message {
     color:red; 
     left: 43%; 
     text-align: center; 
     position: fixed; 
     display:none;
+    background-color: white;
+    padding:1%;
 }
