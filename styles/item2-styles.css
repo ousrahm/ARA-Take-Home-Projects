@@ -1,4 +1,4 @@
-.gameboard-square {
+.setup-gameboard-square {
     background-color: white;
     aspect-ratio: 1;
     border: black solid 1px;
@@ -19,4 +19,12 @@
 .ship-container {
     margin: 20px;
     width:200px;
+}
+
+#select-message {
+    color:red; 
+    left: 43%; 
+    text-align: center; 
+    position: fixed; 
+    display:none;
 }

@@ -2,6 +2,7 @@ body {
     width: 100%;
     height: auto;
     background-color:  #E6E6FA;
+    min-width: 1150px;
 }
 /* #main-navbar {
     background-color: rgb(0, 0, 124) !important;
