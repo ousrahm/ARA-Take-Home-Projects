@@ -1,0 +1,34 @@
+#input-div {
+    color:darkblue; 
+    margin-top:7%;
+}
+
+#input-title {
+    text-align:center; 
+    margin-top: 2%;
+}
+
+#input-subtitle {
+    text-align: center;
+}
+
+#inner-input-div {
+    padding-left:50px; 
+    padding-right: 50px;
+}
+
+#item1-array-input {
+    margin-right: 20px;
+}
+
+#item1-sum-div {
+    margin-top: 7%; 
+    display: none; 
+    color:darkblue;
+}
+
+#item1-sum {
+    text-align: center; 
+    font-size: 10vh; 
+    color:slateblue;
+}

@@ -1,0 +1,32 @@
+body {
+    width: 100%;
+    height: auto;
+    background-color:  #E6E6FA;
+}
+/* #main-navbar {
+    background-color: rgb(0, 0, 124) !important;
+} */
+#title {
+    text-align: center;
+    margin-top: 12.5%;
+    font-size: 8vh;
+    color:darkblue;
+}
+
+#subtitle {
+    text-align: center;
+    margin: 20px;
+    font-size: 3vh;
+    color:darkblue;
+}
+
+.items {
+    border-radius: 20px !important;
+    background-color: ghostwhite;
+    height: 80%;
+}
+
+.item-headers {
+    text-align: center;
+    color: slateblue;
+}

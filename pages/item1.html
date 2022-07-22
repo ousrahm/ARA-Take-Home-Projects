@@ -1,0 +1,26 @@
+<script src="js/item1.js"></script>
+<div id="input-div" class="container">
+    <h2 id="input-title">Input a space-separated list of numbers. </h2>
+    <p id="input-subtitle">Use a hyphen before the number to make it negative e.g. -10.</p>
+    <div id="inner-input-div" class="container-fluid">
+        <div class="input-group mb-3">
+            <input id="item1-array-input" type="text" class="form-control"
+                placeholder="3.1415 2 10 -5.1415 1200">
+            <div class="input-group-append">
+                <button id="item1-array-button" class="btn btn-outline-secondary" type="button">Find Sum</button>
+            </div>
+        </div>
+        <p style="display:none;" id="item1-char-error-message">Only a combination of digits, periods, spaces, and
+            hyphens are permitted.</p>
+        <p style="display:none;" id="item1-empty-error-message">Please enter a value.</p>
+        <p style="display:none;" id="item1-invalid-error-message">Please check your input for invalid numbers or
+            consecutive spaces.</p>
+    </div>
+</div>
+
+<div id="item1-sum-div" class="container">
+    <h2 style="text-align:center">
+        The <strong>sum</strong> of the array is: <h1 id="item1-sum"></h1>
+    </h2>
+
+</div>
