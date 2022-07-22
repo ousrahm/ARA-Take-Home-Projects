@@ -1,6 +1,22 @@
 .gameboard-square {
     background-color: white;
-    width:2vh;
-    height:2vh;
+    aspect-ratio: 1;
+    border: black solid 1px;
 
+}
+
+.tab {
+    padding: 4vh;
+}
+
+.ship {
+    background-color: red;
+    height: 4vh;
+    border: 1px black solid;
+    aspect-ratio: 1;
+}
+
+.ship-container {
+    margin: 20px;
+    width:200px;
 }

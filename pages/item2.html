@@ -1,71 +1,43 @@
 <script src="js/item2.js"></script>
-<h1 style="text-align: center;">Battleship Game</h1>
-<p style="text-align: center;">Play Battleship against a CPU opponent! Be the first to sink all of your opponent's ships to win!</p>
+<h1 style="text-align: center; margin-top:1.5%; color:darkblue">Battleship Game</h1>
+<div style="height:100%; padding-bottom:3%" id="main-game-container">
+    <p style="text-align: center; color:darkblue">Play Battleship against a CPU opponent! Be the first to sink all of
+        your opponent's ships
+        to win!</p>
 
-<div id="item2-ship-selection" class="container" style="margin-top: 6%; text-align: center;">
-    <div class="row">
-        <div class="col">
-            <h5>Carrier</h5>
-            <div class="row">
-                <div class="col">sq</div>
-                <div class="col">sq</div>
-                <div class="col">sq</div>
-                <div class="col">sq</div>
-                <div class="col">sq</div>
+    <div style="margin-top: 5%; color:darkblue;" class="container">
+        <div style="margin-right:10%; margin-left:10%;" class="row">
+            <div style="background-color:ghostwhite; border-radius: 3%;" class="col align-self-center">
+                <h3 style="text-align: center; margin:3%;">Rules to the Game</h3>
+                <div style="padding-left:20%; padding-right:20%;" class="row">
+                    <dl>
+                        <dt style="margin-bottom:1%;"><span class="tab"><u>About Battleship</u></dt>
+                        <dd>- Before play begins, you must arrange your ships on your primary grid.
+                        <dd>- Each ship occupies a number of consecutive squares on the grid, arranged either
+                            horizontally
+                            or vertically. </dd>
+                        <dd>- The number of squares for each ship is determined by the type of ship. </dd>
+                        <dd>- The ships cannot overlap and the types and numbers of ships allowed are the same for each
+                            player. </dd>
+                    </dl>
+                </div>
+                <div style="padding-left:20%; padding-right:20%;" class="row">
+                    <dl>
+                        <dt style="margin-bottom:1%;"><span class="tab"><u>How to Play</u></dt>
+                        <dd>- After the ships have been positioned, the game proceeds in a series of rounds.</dd>
+                        <dd>- In each round, each player selects a target square to shoot at. </dd>
+                        <dd>- If an enemy ship is occupying that square, that square will turn red. If no enemy ship is
+                            occupying that square, the square will receive an X.</dd>
+                        <dd>- When all of the squares of a ship have been hit, those squares will turn dark red. </dd>
+                        <dd>- If all of a player's ships have been sunk, the game is over and their opponent wins. If
+                            all ships of both players are sunk by the end of the round, the game is a draw.</dd>
+                    </dl>
+                </div>
+
             </div>
         </div>
-        <div class="col">
-            <h5>Battleship</h5>
-            <div class="row">
-                <div class="col">sq</div>
-                <div class="col">sq</div>
-                <div class="col">sq</div>
-                <div class="col">sq</div>
-            </div>
-        </div>
-        <div class="col">
-            <h5>Cruiser</h5>
-            <div class="row">
-                <div class="col">sq</div>
-                <div class="col">sq</div>
-                <div class="col">sq</div>
-            </div>
-        </div>
-        <div class="col">
-            <h5>Submarine</h5>
-            <div class="row">
-                <div class="col">sq</div>
-                <div class="col">sq</div>
-                <div class="col">sq</div>
-            </div>
-        </div>
-        <div class="col">
-            <h5>Destroyer</h5>
-            <div class="row">
-                <div class="col">sq</div>
-                <div class="col">sq</div>
-            </div>
+        <div style="margin-top:5%; margin-bottom:5%; margin-right:10%; margin-left:10%;" class="row">
+            <button id="ready-to-play" type="button" class="btn btn-success btn-lg btn-block">Ready to play!</button>
         </div>
     </div>
-</div>
-
-<div style="margin-top: 10%;" class="container">
-    <div class="row">
-        <div class="gameboard-square col">col</div>
-        <div class="gameboard-square col">col</div>
-        <div class="gameboard-square col">col</div>
-        <div class="gameboard-square col">col</div>
-        <div class="gameboard-square col">col</div>
-        <div class="w-100"></div>
-        <div class="gameboard-square col">col</div>
-        <div class="gameboard-square col">col</div>
-        <div class="gameboard-square col">col</div>
-        <div class="gameboard-square col">col</div>
-        <div class="gameboard-square col">col</div>
-        <div class="w-100"></div>
-        <div class="gameboard-square col">col</div>
-        <div class="gameboard-square col">col</div>
-        <div class="gameboard-square col">col</div>
-      </div>
-
 </div>

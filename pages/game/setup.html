@@ -1,0 +1,94 @@
+<script>
+    for (let i = 0; i < 10; i++) {
+        $("#gameboard").append(`<div id="${"row" + i}"class="row">`);
+        for (let j = 0; j <= 9; j++) {
+            gameboardSquare(i, j);
+        }
+        $("#gameboard").append('</div>');
+    }
+    function gameboardSquare(a, b) {
+        const row = "#row" + a;
+        $("#gameboard").children(row).append(`<div id=${"sq" + a +""+ b} class="gameboard-square col">${a+""+b}</div>`);
+    }
+</script>
+<h5 style="text-align:center;">Time to place your ships!</h5>
+<div id="item2-ship-selection" class="container" style="margin-top: 6%;">
+    <div class="row justify-content-start">
+        <div class="col-3">
+            <h3><u>Battleships</u></h3>
+            <div id="carrier" class="ship-container row justify-content-start">
+                <h5>Carrier</h5>
+                <div style="width:100%;" class="row">
+                    <div class="ship col"></div>
+                    <div class="ship col"></div>
+                    <div class="ship col"></div>
+                    <div class="ship col"></div>
+                    <div class="ship col"></div>
+                </div>
+            </div>
+            <div id="battleship" class="ship-container row justify-content-start">
+                <h5>Battleship</h5>
+                <div style="width:80%;" class="row">
+                    <div class="ship col"></div>
+                    <div class="ship col"></div>
+                    <div class="ship col"></div>
+                    <div class="ship col"></div>
+                    <div class="w-100"></div>
+                </div>
+            </div>
+            <div id="cruiser" class="ship-container row justify-content-start">
+                <h5>Cruiser</h5>
+                <div style="width:60%;" class="row">
+                    <div class="ship col"></div>
+                    <div class="ship col"></div>
+                    <div class="ship col"></div>
+                </div>
+            </div>
+            <div id="submarine" class="ship-container row justify-content-start">
+                <h5>Submarine</h5>
+                <div style="width:60%;" class="row">
+                    <div class="ship col"></div>
+                    <div class="ship col"></div>
+                    <div class="ship col"></div>
+                </div>
+            </div>
+            <div id="destroyer" class="ship-container row justify-content-start">
+                <h5>Destroyer</h5>
+                <div style="width:40%;" class="row">
+                    <div class="ship col"></div>
+                    <div class="ship col"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6">
+            <div id="gameboard" class="row">
+            </div>
+        </div>
+        <div class="col">
+            <div style="border:black 1px solid; border-radius: 5%;" class="row">
+                <div class="container">
+                <h5>How to Place Ships</h5>
+                <ol>
+                    <li>
+                        Select a ship from the left side of the screen by clicking it. It will highlight when selected.
+                    </li>
+                    <li>
+                        Select a square from the table to place the front/bow of the ship.
+                    </li>
+                    <li>
+                        Select a highlighted square from the table to place the rear/stern of the ship.
+                    </li>
+                    <li>
+                        Repeat with the rest of the ships until all are placed. Press the reset button if you would like to start over.
+                    </li>
+                </ol>
+            </div>
+            </div>
+            <div style="margin-top:5%" class="row">
+                <button class="btn btn-outline-danger btn-lg btn-block">Reset</button>
+            </div>
+
+        </div>
+
+    </div>
+</div>
