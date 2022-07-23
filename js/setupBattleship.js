@@ -130,7 +130,6 @@ class SetupBattleship {
     addSquareListeners() {
         var self = this;
         $(document).one("click", ".setup-gameboard-square", { self: self }, function () {
-            console.log("addSquareListeners")
             const id = this.id;
             const arr = id.split("");
             const i = parseInt(arr[2]);
@@ -185,7 +184,6 @@ class SetupBattleship {
 
             // If a square is available, place stern of ship
             case 1:
-                console.log("case1")
                 if (this.gameboard[i][j] === 0 && this.possibleSquares.length == 0) {
                     this.placeStern(this.currentShip, id, i, j);
                 }
@@ -227,7 +225,9 @@ class SetupBattleship {
         this.gameboard[i][j] = 1;
 
         // Change color of selected square
+        console.log("before color:"+id);
         this.colorSquare("#" + id, "darkblue");
+        console.log("after color:"+id)
         this.highlightSquare("#" + id, "white");
 
         const len = this.ships[currentShip]["length"];
@@ -277,9 +277,11 @@ class SetupBattleship {
         possibilities.forEach((arr) => {
             const a = arr[0];
             const b = arr[1]
-            const idStr = "#sq" + a + "" + b;
-            $(document).one("click", idStr, { self: self, id: idStr, a: a, b: b }, function () {
-                self.handleSquareClick(id, a, b);
+            const squareID = "#sq" + a + "" + b;
+            const idStr = "sq" + a + "" + b;
+            $(document).one("click", squareID, { self: self, idStr: idStr, a: a, b: b }, function () {
+                console.log("Hitting this listener")
+                self.handleSquareClick(idStr, a, b);
             });
         })
 
@@ -562,8 +564,6 @@ class SetupBattleship {
         $(id).css("border-color", color);
     }
 
-
-
     /**
      * Checks that all ships have been placed.
      * If so, empty main-game-container div and load play.html
@@ -588,8 +588,5 @@ class SetupBattleship {
             });
         }
     }
-
-
-
 
 }
