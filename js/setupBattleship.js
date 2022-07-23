@@ -13,9 +13,20 @@ class SetupBattleship {
         }
         this.addShipListeners();
         this.stage = this.Stages.NEWSHIP;
-        
+
         this.currentShip = "";
         this.possibleSquares = [];
+
+        var self = this;
+        // On click of reset button, reset board.
+        $(document).one("click", "#reset-board", { self: self }, function () {
+            self.resetBoard();
+        });
+
+        // On click of ready button, ready board.
+        $(document).one("click", "#ready-board", { self: self }, function () {
+            self.readyBoard();
+        });
     }
 
 
@@ -69,22 +80,6 @@ class SetupBattleship {
 
         // Append gamesquare to appropriate row w/ index specific id
         $("#setup-gameboard").children(row).append(`<div id=${id} class="setup-gameboard-square col">${a + "" + b}</div>`);
-
-        // On click of game square, call handleClick
-        $(document).one("click", "#" + id, { id: id, a: a, b: b, self: self }, function () {
-            self.handleSquareClick(id, a, b)
-        });
-
-
-        // On click of reset button, reset board.
-        $(document).one("click", "#reset-board", { self: self }, function () {
-            self.resetBoard();
-        });
-
-        // On click of ready button, ready board.
-        $(document).one("click", "#ready-board", { self: self }, function () {
-            self.readyBoard();
-        });
     }
 
     /**
@@ -92,32 +87,42 @@ class SetupBattleship {
      */
     addShipListeners() {
         var self = this;
-        
-        // If ship has not been placed and does not already have a listener, give it a listener.
-        switch(true) {
-            case (!this.ships.carrier.placed):
-                $(document).off("click", "#carrier", false).one("click", "#carrier", {self:self}, function() {
-                    console.log("Carrier!")
-                    self.selectedShip("carrier");
-                })
-            case (!this.ships.battleship.placed):
-                $(document).off("click", "#battleship", false).one("click", "#battleship", {self:self}, function() {
-                    console.log("Battleship!")
-                    self.selectedShip("battleship");
-                })
-            case (!this.ships['cruiser'].placed):
-                $(document).off("click", "#cruiser", false).one("click", "#cruiser", {self:self}, function() {
-                    self.selectedShip("cruiser");
-                })
-            case (!this.ships['submarine'].placed):
-                $(document).off("click", "#submarine", false).one("click", "#submarine", {self:self}, function() {
-                    self.selectedShip("submarine");
-                })
-            case (!this.ships['destroyer'].placed):
-                $(document).off("click", "#destroyer", false).one("click", "#destroyer", {self:self}, function() {
-                    self.selectedShip("destroyer");
-                })
+        if (!this.ships.carrier.placed) {
+            $(document).one("click", "#carrier", { self: self }, function () {
+                self.selectedShip("carrier");
+            })
+        } else if (!this.ships.battleship.placed) {
+            $(document).one("click", "#battleship", { self: self }, function () {
+                self.selectedShip("battleship");
+            })
+        } else if (!this.ships.cruiser.placed) {
+            $(document).one("click", "#cruiser", { self: self }, function () {
+                self.selectedShip("cruiser");
+            })
+        } else if (!this.ships.submarine.placed) {
+            $(document).one("click", "#submarine", { self: self }, function () {
+                self.selectedShip("submarine");
+            })
+        } else if (!this.ships.destroyer.placed) {
+            $(document).one("click", "#destroyer", { self: self }, function () {
+                self.selectedShip("destroyer");
+            })
         }
+
+
+    }
+
+
+    addSquareListeners() {
+        var self = this;
+        $(document).one("click", ".setup-gameboard-square", { self: self }, function () {
+            console.log("addSquareListeners")
+            const id = this.id;
+            const arr = id.split("");
+            const i = parseInt(arr[2]);
+            const j = parseInt(arr[3]);
+            self.handleSquareClick(id, i, j)
+        });
     }
 
     /**
@@ -127,8 +132,8 @@ class SetupBattleship {
      */
     selectedShip(ship) {
 
-        // Turn off listeners for all ships once one has been selected
-        $(document).off("click", ".ship-container", false);
+        // Turn on all square's listeners
+        this.addSquareListeners();
 
         this.currentShip = ship;
 
@@ -166,14 +171,16 @@ class SetupBattleship {
 
             // If square is available, place stern of ship
             case 1:
+                console.log("case1")
                 if (this.gameboard[i][j] === 0 && this.possibleSquares.length == 0) {
                     this.placeStern(this.currentShip, id, i, j);
-                } else {
-                    break;
                 }
-
+                break;
+            
             // If square is a possible square, place bow of ship
             case 2:
+                console.log("i,j: "+i+","+j)
+                console.log(this.possibleSquares)
                 const square = [i, j];
                 // Compares two arrays for equality
                 function isEqual(a, b) {
@@ -183,18 +190,13 @@ class SetupBattleship {
                 // and empty possible squares.
                 this.possibleSquares.forEach((arr) => {
                     if (isEqual(arr, square)) {
+                        console.log("placingBow!")
                         this.placeBow(this.currentShip, i, j);
                         this.emptyPossibleSquares();
                     }
                 })
                 break;
         }
-
-        var self = this;
-        // On click of game square, call handleClick
-        $(document).one("click", "#" + id, { id: id, i: i, j: j, self: self }, function () {
-            self.handleSquareClick(id, i, j)
-        });
     }
 
     /**
@@ -205,6 +207,7 @@ class SetupBattleship {
      * @param {Number} j 
      */
     placeStern(currentShip, id, i, j) {
+
         // Change stage to place bow
         this.stage = this.Stages.BOW;
 
@@ -254,6 +257,17 @@ class SetupBattleship {
             this.stage = this.Stages.BOW;
         }
 
+        // Add square listeners back to only possible squares
+        var self = this;
+        possibilities.forEach((arr) => {
+            const a = arr[0];
+            const b = arr[1]
+            const idStr = "#sq" + a + "" + b;
+            $(document).one("click", idStr, { self: self, id: idStr, a:a, b:b }, function () {
+                self.handleSquareClick(id, a, b);
+            });
+        })
+
     }
 
     /**
@@ -265,6 +279,7 @@ class SetupBattleship {
      * @param {Number} j left-right index of square
      */
     placeBow(currentShip, i, j) {
+
         const stern = this.ships[currentShip].location[0];
         const a = stern[0];
         const b = stern[1];
@@ -280,22 +295,22 @@ class SetupBattleship {
 
         // Bow is lower than stern
         if (i > a) {
-            for (let k = i; k > a; k--) {
+            for (let k = i; k >= a; k--) {
                 addSquare(k, b, self);
             }
             // Bow is higher than stern
         } else if (i < a) {
-            for (let k = i; k < a; k++) {
+            for (let k = i; k <= a; k++) {
                 addSquare(k, b, self);
             }
             // Bow is more right than stern
         } if (j > b) {
-            for (let k = j; k > b; k--) {
+            for (let k = j; k >= b; k--) {
                 addSquare(a, k, self);
             }
             // Bow is more left than stern
         } else if (j < b) {
-            for (let k = j; k < b; k++) {
+            for (let k = j; k <= b; k++) {
                 addSquare(a, k, self);
             }
         }
@@ -312,7 +327,7 @@ class SetupBattleship {
         // Change stage of game back to newship
         this.stage = this.Stages.NEWSHIP;
 
-        // Add listeners back to ships that have not been placed yet
+        // Add listener to next ship
         this.addShipListeners();
 
     }
@@ -460,6 +475,7 @@ class SetupBattleship {
         // Add listeners back to ships
         this.addShipListeners();
 
+        // Add listener back to reset board button
         var self = this;
         $(document).one("click", "#reset-board", { self: self }, function () {
             self.resetBoard();
@@ -523,6 +539,8 @@ class SetupBattleship {
     highlightSquare(id, color) {
         $(id).css("border-color", color);
     }
+
+
 
     /**
      * Checks that all ships have been placed.
