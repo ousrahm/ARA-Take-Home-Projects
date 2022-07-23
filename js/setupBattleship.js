@@ -190,7 +190,7 @@ class SetupBattleship {
                     this.placeStern(this.currentShip, id, i, j);
                 }
                 break;
-            
+
             // If square is a possible square, place bow of ship
             case 2:
                 const square = [i, j];
@@ -241,7 +241,7 @@ class SetupBattleship {
             $("#somewhere-else-message").fadeIn("slow", function () {
                 $("#somewhere-else-message").fadeOut(1000);
             });
-            
+
             // Add listeners back
             this.addSquareListeners();
 
@@ -278,7 +278,7 @@ class SetupBattleship {
             const a = arr[0];
             const b = arr[1]
             const idStr = "#sq" + a + "" + b;
-            $(document).one("click", idStr, { self: self, id: idStr, a:a, b:b }, function () {
+            $(document).one("click", idStr, { self: self, id: idStr, a: a, b: b }, function () {
                 self.handleSquareClick(id, a, b);
             });
         })
@@ -445,6 +445,7 @@ class SetupBattleship {
             const j = this.possibleSquares[k][1];
             const id = "#sq" + i + "" + j;
 
+            // If square color matches lightskyblue, change to white
             if ($(id).css("background-color") === "rgb(135, 206, 250)") {
                 this.colorSquare(id, "white");
             }
@@ -461,7 +462,7 @@ class SetupBattleship {
         // Change all squares back to white with black border
         for (let k = 0; k < this.gameboard.length; k++) {
             for (let l = 0; l < this.gameboard[0].length; l++) {
-                const id = "#sq"+k+""+l;
+                const id = "#sq" + k + "" + l;
                 this.colorSquare(id, "white");
                 this.highlightSquare(id, "black");
 
@@ -490,6 +491,7 @@ class SetupBattleship {
         this.possibleSquares = [];
         this.stage = this.Stages.NEWSHIP;
 
+        // Remove borders from all ships
         this.removeHighlightAllShips();
 
         // Add listeners back to ships
@@ -571,11 +573,15 @@ class SetupBattleship {
         if (this.ships["carrier"].placed && this.ships["battleship"].placed &&
             this.ships["cruiser"].placed && this.ships["submarine"].placed &&
             this.ships["destroyer"].placed) {
+
             $("#main-game-container").empty().load("pages/game/play.html");
+
         } else {
+
             $("#not-ready-message").fadeIn(1000, function () {
                 $("#not-ready-message").fadeOut(1000);
             });
+
             var self = this;
             $(document).one("click", "#ready-board", { self: self }, function () {
                 self.readyBoard();
