@@ -4,8 +4,6 @@ class SetupBattleship {
         this.gameboard = [];
         this.setupGameboard();
         this.setupGameboardHTML();
-        this.addShipListeners();
-        this.stage = this.Stages.NEWSHIP;
         this.ships = {
             carrier: { length: 5, highlight: "none", placed: false, location: [] },
             battleship: { length: 4, highlight: "none", placed: false, location: [] },
@@ -13,8 +11,11 @@ class SetupBattleship {
             submarine: { length: 3, highlight: "none", placed: false, location: [] },
             destroyer: { length: 2, highlight: "none", placed: false, location: [] }
         }
+        this.addShipListeners();
+        this.stage = this.Stages.NEWSHIP;
+        
         this.currentShip = "";
-        this.possibileSquares = [];
+        this.possibleSquares = [];
     }
 
 
@@ -57,9 +58,9 @@ class SetupBattleship {
 
     /**
      * Appends square to row of setup gameboard
-     * Adds click listener to squares
-     * @param {Number} a 
-     * @param {Number} b 
+     * Adds click listener to squares and reset/ready buttons
+     * @param {Number} a row index of square
+     * @param {Number} b column index of square
      */
     setupGameboardHTMLSquare(a, b) {
         const row = "#row" + a;
@@ -70,74 +71,84 @@ class SetupBattleship {
         $("#setup-gameboard").children(row).append(`<div id=${id} class="setup-gameboard-square col">${a + "" + b}</div>`);
 
         // On click of game square, call handleClick
-        $(document).on("click", "#" + id, { id: id, a: a, b: b, self: self }, function () {
+        $(document).one("click", "#" + id, { id: id, a: a, b: b, self: self }, function () {
             self.handleSquareClick(id, a, b)
         });
 
+
         // On click of reset button, reset board.
-        $(document).on("click", "#reset-board", {self:self}, function() {
+        $(document).one("click", "#reset-board", { self: self }, function () {
             self.resetBoard();
         });
 
         // On click of ready button, ready board.
-        $(document).on("click", "#ready-board", {self:self}, function() {
+        $(document).one("click", "#ready-board", { self: self }, function () {
             self.readyBoard();
         });
     }
 
     /**
-     * Add click listeners to all battleships
+     * Adds click listeners to all battleships that have not been placed yet
      */
     addShipListeners() {
         var self = this;
-
-        $(document).on("click", ".ship-container", { self: self }, function () {
-            self.selectedShip(this.getAttribute("id"));
-        })
+        
+        // If ship has not been placed and does not already have a listener, give it a listener.
+        switch(true) {
+            case (!this.ships.carrier.placed):
+                $(document).off("click", "#carrier", false).one("click", "#carrier", {self:self}, function() {
+                    console.log("Carrier!")
+                    self.selectedShip("carrier");
+                })
+            case (!this.ships.battleship.placed):
+                $(document).off("click", "#battleship", false).one("click", "#battleship", {self:self}, function() {
+                    console.log("Battleship!")
+                    self.selectedShip("battleship");
+                })
+            case (!this.ships['cruiser'].placed):
+                $(document).off("click", "#cruiser", false).one("click", "#cruiser", {self:self}, function() {
+                    self.selectedShip("cruiser");
+                })
+            case (!this.ships['submarine'].placed):
+                $(document).off("click", "#submarine", false).one("click", "#submarine", {self:self}, function() {
+                    self.selectedShip("submarine");
+                })
+            case (!this.ships['destroyer'].placed):
+                $(document).off("click", "#destroyer", false).one("click", "#destroyer", {self:self}, function() {
+                    self.selectedShip("destroyer");
+                })
+        }
     }
 
     /**
-     * Highlights selected ship, changes selected value to true, changes current ship,
-     * and changes the stage of the game.
+     * Turns off all ships' listeners, changes currentShip, 
+     * highlights selected ship, and changes the stage of the game.
      * @param {String} ship Name of selected ship 
      */
     selectedShip(ship) {
 
-        // If the ship selected has already been placed, do nothing.
-        if (this.ships[ship].placed === true) {
-            return;
-
-        // If the ship selected was already selected, unselect it.
-        } else if (this.currentShip === ship) {
-            this.removeHighlightShip(ship);
-            this.currentShip = "";
-            return;
-
-        // If the currentShip is not selected one and not empty
-        } else if (this.currentShip !== "" && this.currentShip !== ship) {
-            this.removeHighlightShip(this.currentShip);
-        }
+        // Turn off listeners for all ships once one has been selected
+        $(document).off("click", ".ship-container", false);
 
         this.currentShip = ship;
 
         if (this.ships[ship]['highlight'] == "none") {
             this.highlightShip(ship, "darkblue");
         }
-        
 
         this.stage = this.Stages.STERN;
     }
 
     /**
-     * When a square is clicked, depending on stage of setup, send to correct function.
-     * @param {String} id id of square
-     * @param {Number} i up-down index of square
-     * @param {Number} j left-right index of square
+     * When a square is clicked, depending on stage of setup, send to correct method.
+     * @param {String} id id of square DOM element
+     * @param {Number} i row index of square
+     * @param {Number} j column index of square
      */
     handleSquareClick(id, i, j) {
 
         // If no ship is selected, show select message.
-        if (this.currentShip == "" ) {
+        if (this.currentShip == "") {
             $("#select-message").fadeIn("slow", function () {
                 $("#select-message").fadeOut(1000);
             });
@@ -151,14 +162,14 @@ class SetupBattleship {
                 $("#select-message").fadeIn("slow", function () {
                     $("#select-message").fadeOut(1000);
                 });
-                return;
+                break;
 
             // If square is available, place stern of ship
             case 1:
-                if (this.gameboard[i][j] === 0) {
+                if (this.gameboard[i][j] === 0 && this.possibleSquares.length == 0) {
                     this.placeStern(this.currentShip, id, i, j);
                 } else {
-                    return;
+                    break;
                 }
 
             // If square is a possible square, place bow of ship
@@ -170,7 +181,7 @@ class SetupBattleship {
                 }
                 // If the selected square is a possible square, place the bow
                 // and empty possible squares.
-                this.possibileSquares.forEach((arr) => {
+                this.possibleSquares.forEach((arr) => {
                     if (isEqual(arr, square)) {
                         this.placeBow(this.currentShip, i, j);
                         this.emptyPossibleSquares();
@@ -178,6 +189,12 @@ class SetupBattleship {
                 })
                 break;
         }
+
+        var self = this;
+        // On click of game square, call handleClick
+        $(document).one("click", "#" + id, { id: id, i: i, j: j, self: self }, function () {
+            self.handleSquareClick(id, i, j)
+        });
     }
 
     /**
@@ -195,8 +212,8 @@ class SetupBattleship {
         this.gameboard[i][j] = 1;
 
         // Change color of selected square
-        this.colorSquare("#"+id, "darkblue");
-        this.highlightSquare("#"+id, "white");
+        this.colorSquare("#" + id, "darkblue");
+        this.highlightSquare("#" + id, "white");
 
         const len = this.ships[currentShip]["length"];
 
@@ -211,7 +228,7 @@ class SetupBattleship {
             });
 
             // return square color to white
-            this.colorSquare("#"+id, "white")
+            this.colorSquare("#" + id, "white")
 
             // return number in gameboard array to 0
             this.gameboard[i][j] = 0;
@@ -251,13 +268,13 @@ class SetupBattleship {
         const stern = this.ships[currentShip].location[0];
         const a = stern[0];
         const b = stern[1];
-        var self= this;
+        var self = this;
 
         // Helper function to change gameboard array, add location of square to ship
         // object, and changes square color
         function addSquare(x, y, self) {
             self.gameboard[x][y] = 1;
-            self.ships[currentShip].location.push([x,y]);
+            self.ships[currentShip].location.push([x, y]);
             $("#sq" + x + "" + y).css("background-color", "darkblue").css("border-color", "white");
         }
 
@@ -279,7 +296,7 @@ class SetupBattleship {
             // Bow is more left than stern
         } else if (j < b) {
             for (let k = j; k < b; k++) {
-                addSquare(a,k, self);
+                addSquare(a, k, self);
             }
         }
 
@@ -294,6 +311,9 @@ class SetupBattleship {
 
         // Change stage of game back to newship
         this.stage = this.Stages.NEWSHIP;
+
+        // Add listeners back to ships that have not been placed yet
+        this.addShipListeners();
 
     }
 
@@ -382,7 +402,7 @@ class SetupBattleship {
             }
         }
 
-        this.possibileSquares = possibilities;
+        this.possibleSquares = possibilities;
 
         return possibilities;
     }
@@ -391,9 +411,9 @@ class SetupBattleship {
      * Return all highlighted squares to white and empty possibleSquares array
      */
     emptyPossibleSquares() {
-        for (let k = 0; k < this.possibileSquares.length; k++) {
-            const i = this.possibileSquares[k][0];
-            const j = this.possibileSquares[k][1];
+        for (let k = 0; k < this.possibleSquares.length; k++) {
+            const i = this.possibleSquares[k][0];
+            const j = this.possibleSquares[k][1];
             const id = "#sq" + i + "" + j;
 
             if ($(id).css("background-color") === "rgb(135, 206, 250)") {
@@ -401,16 +421,19 @@ class SetupBattleship {
             }
         }
 
-        this.possibileSquares = [];
+        this.possibleSquares = [];
     }
 
+    /**
+     * Resets gameboard and all setupBattleship properties
+     */
     resetBoard() {
 
         // Change all squares back to white with black border
-        for ( let k = 0; k < this.gameboard.length; k++) {
+        for (let k = 0; k < this.gameboard.length; k++) {
             for (let l = 0; l < this.gameboard[0].length; l++) {
-                this.colorSquare("#sq"+k+""+l, "white");
-                this.highlightSquare("#sq"+k+""+l, "black");
+                this.colorSquare("#sq" + k + "" + l, "white");
+                this.highlightSquare("#sq" + k + "" + l, "black");
             }
         }
 
@@ -426,11 +449,22 @@ class SetupBattleship {
             submarine: { length: 3, placed: false, location: [] },
             destroyer: { length: 2, placed: false, location: [] }
         }
+
+        // Reset properties
         this.currentShip = "";
-        this.possibileSquares = [];
+        this.possibleSquares = [];
         this.stage = this.Stages.NEWSHIP;
 
         this.removeHighlightAllShips();
+
+        // Add listeners back to ships
+        this.addShipListeners();
+
+        var self = this;
+        $(document).one("click", "#reset-board", { self: self }, function () {
+            self.resetBoard();
+        });
+
     }
 
     /**
@@ -438,16 +472,23 @@ class SetupBattleship {
      * @param {String} ship 
      */
     highlightShip(ship, color) {
-        $("#" + ship).css("border", "solid "+color+" 2px").css("border-radius", "3%");
+        $("#" + ship).css("border", "solid " + color + " 2px").css("border-radius", "3%");
         this.ships[ship]['highlight'] = color;
     }
 
+    /**
+     * Removes border from ship and changes highlight property to none
+     * @param {String} ship 
+     */
     removeHighlightShip(ship) {
         $("#" + ship).css("border", "none");
         this.ships[ship]['highlight'] = "none";
     }
 
-
+    /**
+     * Removes borders from all ships and changes the
+     * highlight property of their object in ships to none
+     */
     removeHighlightAllShips() {
         this.removeHighlightShip("carrier");
         this.ships["carrier"]['highlight'] = "none";
@@ -465,22 +506,41 @@ class SetupBattleship {
         this.ships["destroyer"]['highlight'] = "none";
     }
 
+    /**
+     * Gives square background-color based on id and color
+     * @param {String} id 
+     * @param {String} color 
+     */
     colorSquare(id, color) {
         $(id).css("background-color", color);
     }
 
+    /**
+     * Gives square border-color based on id and color
+     * @param {String} id 
+     * @param {String} color 
+     */
     highlightSquare(id, color) {
         $(id).css("border-color", color);
     }
 
+    /**
+     * Checks that all ships have been placed.
+     * If so, empty main-game-container div and load play.html
+     * If not, display not-ready-message
+     */
     readyBoard() {
         if (this.ships["carrier"].placed && this.ships["battleship"].placed &&
             this.ships["cruiser"].placed && this.ships["submarine"].placed &&
             this.ships["destroyer"].placed) {
-                console.log("READY TO PLAY!")
+            $("#main-game-container").empty().load("pages/game/play.html");
         } else {
             $("#not-ready-message").fadeIn(1000, function () {
                 $("#not-ready-message").fadeOut(1000);
+            });
+            var self = this;
+            $(document).one("click", "#ready-board", { self: self }, function () {
+                self.readyBoard();
             });
         }
     }
