@@ -2,7 +2,12 @@
     background-color: white;
     aspect-ratio: 1;
     border: black solid 1px;
+}
 
+.setup-gameboard-square-ship {
+    background-color: darkblue;
+    aspect-ratio: 1;
+    border: white solid 1px;
 }
 
 .tab {

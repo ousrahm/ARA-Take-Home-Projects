@@ -1,9 +1,17 @@
+// Handles the setup of the game i.e. placing ships.
 class SetupBattleship {
 
     constructor() {
+        // Array representation of the player's gameboard
         this.gameboard = [];
+
+        // Initializes gameboard array
         this.setupGameboard();
+
+        // Creates gameboard HTML
         this.setupGameboardHTML();
+
+        // Holds information about all ships
         this.ships = {
             carrier: { length: 5, highlight: "none", placed: false, location: [] },
             battleship: { length: 4, highlight: "none", placed: false, location: [] },
@@ -11,10 +19,17 @@ class SetupBattleship {
             submarine: { length: 3, highlight: "none", placed: false, location: [] },
             destroyer: { length: 2, highlight: "none", placed: false, location: [] }
         }
+
+        // Adds listeners to all ships on left-side of page
         this.addShipListeners();
+
+        // Tracks current stage of game
         this.stage = this.Stages.NEWSHIP;
 
+        // Tracks current ship being placed
         this.currentShip = "";
+
+        // Tracks possible squares to place bow of ship
         this.possibleSquares = [];
 
         var self = this;
@@ -69,7 +84,6 @@ class SetupBattleship {
 
     /**
      * Appends square to row of setup gameboard
-     * Adds click listener to squares and reset/ready buttons
      * @param {Number} a row index of square
      * @param {Number} b column index of square
      */
@@ -88,31 +102,31 @@ class SetupBattleship {
     addShipListeners() {
         var self = this;
         if (!this.ships.carrier.placed) {
-            $(document).one("click", "#carrier", { self: self }, function () {
+            $(document).off("click", "#carrier", false).one("click", "#carrier", { self: self }, function () {
                 self.selectedShip("carrier");
             })
         } else if (!this.ships.battleship.placed) {
-            $(document).one("click", "#battleship", { self: self }, function () {
+            $(document).off("click", "#battleship", false).one("click", "#battleship", { self: self }, function () {
                 self.selectedShip("battleship");
             })
         } else if (!this.ships.cruiser.placed) {
-            $(document).one("click", "#cruiser", { self: self }, function () {
+            $(document).off("click", "#cruiser", false).one("click", "#cruiser", { self: self }, function () {
                 self.selectedShip("cruiser");
             })
         } else if (!this.ships.submarine.placed) {
-            $(document).one("click", "#submarine", { self: self }, function () {
+            $(document).off("click", "#submarine", false).one("click", "#submarine", { self: self }, function () {
                 self.selectedShip("submarine");
             })
         } else if (!this.ships.destroyer.placed) {
-            $(document).one("click", "#destroyer", { self: self }, function () {
+            $(document).off("click", "#destroyer", false).one("click", "#destroyer", { self: self }, function () {
                 self.selectedShip("destroyer");
             })
         }
-
-
     }
 
-
+    /**
+     * Adds listeners to all squares w/ setup-gameboard-square class
+     */
     addSquareListeners() {
         var self = this;
         $(document).one("click", ".setup-gameboard-square", { self: self }, function () {
@@ -126,7 +140,7 @@ class SetupBattleship {
     }
 
     /**
-     * Turns off all ships' listeners, changes currentShip, 
+     * Turns on square listeners, changes currentShip, 
      * highlights selected ship, and changes the stage of the game.
      * @param {String} ship Name of selected ship 
      */
@@ -169,7 +183,7 @@ class SetupBattleship {
                 });
                 break;
 
-            // If square is available, place stern of ship
+            // If a square is available, place stern of ship
             case 1:
                 console.log("case1")
                 if (this.gameboard[i][j] === 0 && this.possibleSquares.length == 0) {
@@ -179,8 +193,6 @@ class SetupBattleship {
             
             // If square is a possible square, place bow of ship
             case 2:
-                console.log("i,j: "+i+","+j)
-                console.log(this.possibleSquares)
                 const square = [i, j];
                 // Compares two arrays for equality
                 function isEqual(a, b) {
@@ -190,7 +202,6 @@ class SetupBattleship {
                 // and empty possible squares.
                 this.possibleSquares.forEach((arr) => {
                     if (isEqual(arr, square)) {
-                        console.log("placingBow!")
                         this.placeBow(this.currentShip, i, j);
                         this.emptyPossibleSquares();
                     }
@@ -202,9 +213,10 @@ class SetupBattleship {
     /**
      * Changes gameboard array, changes color of selected square,
      * highlights possible squares for bow of ship.
-     * @param {Number} id 
-     * @param {Number} i 
-     * @param {Number} j 
+     * @param {String} currentShip name of ship currently being placed
+     * @param {Number} id id of square dom element
+     * @param {Number} i row index of square
+     * @param {Number} j column index of square
      */
     placeStern(currentShip, id, i, j) {
 
@@ -221,7 +233,7 @@ class SetupBattleship {
         const len = this.ships[currentShip]["length"];
 
         // Find possible squares for bow of ship based on length
-        let possibilities = this.findPossibleSquares(len, id, i, j);
+        let possibilities = this.findPossibleSquares(len, i, j);
 
         // If there are no possible squares:
         if (possibilities.length === 0) {
@@ -229,6 +241,9 @@ class SetupBattleship {
             $("#somewhere-else-message").fadeIn("slow", function () {
                 $("#somewhere-else-message").fadeOut(1000);
             });
+            
+            // Add listeners back
+            this.addSquareListeners();
 
             // return square color to white
             this.colorSquare("#" + id, "white")
@@ -274,12 +289,12 @@ class SetupBattleship {
      * Fills in ship's squares in gameboard array and changes
      * colors to darkblue on gameboard 
      * @param {String} currentShip name of current ship
-     * @param {String} id id of selected square
      * @param {Number} i up-down index of square
      * @param {Number} j left-right index of square
      */
     placeBow(currentShip, i, j) {
 
+        // Grabs location of stern of ship
         const stern = this.ships[currentShip].location[0];
         const a = stern[0];
         const b = stern[1];
@@ -290,7 +305,7 @@ class SetupBattleship {
         function addSquare(x, y, self) {
             self.gameboard[x][y] = 1;
             self.ships[currentShip].location.push([x, y]);
-            $("#sq" + x + "" + y).css("background-color", "darkblue").css("border-color", "white");
+            $("#sq" + x + "" + y).removeClass("setup-gameboard-square").css("background-color", "darkblue").css("border", "1px white solid").css("aspect-ratio", 1);
         }
 
         // Bow is lower than stern
@@ -318,7 +333,7 @@ class SetupBattleship {
         // Assert that current ship has been placed
         this.ships[currentShip].placed = true;
 
-        // Change side of screen ship to limegreen
+        // Change side of screen ship border to limegreen
         this.highlightShip(currentShip, "limegreen");
 
         // Change the currentShip back to nothing
@@ -336,12 +351,11 @@ class SetupBattleship {
      * Helper function that checks all directions around a ship's stern
      * for unavailable squares
      * @param {Number} len 
-     * @param {String} ship 
      * @param {Number} i 
      * @param {Number} j 
      * @returns possible indices of squares to place ship's bow
      */
-    findPossibleSquares(len, ship, i, j) {
+    findPossibleSquares(len, i, j) {
         let possibilities = [];
 
         let up = i - (len - 1);
@@ -447,8 +461,14 @@ class SetupBattleship {
         // Change all squares back to white with black border
         for (let k = 0; k < this.gameboard.length; k++) {
             for (let l = 0; l < this.gameboard[0].length; l++) {
-                this.colorSquare("#sq" + k + "" + l, "white");
-                this.highlightSquare("#sq" + k + "" + l, "black");
+                const id = "#sq"+k+""+l;
+                this.colorSquare(id, "white");
+                this.highlightSquare(id, "black");
+
+                // If square is missing the setup-gameboard class, add it again.
+                if (!$(id).attr("class").includes("setup-gameboard-square")) {
+                    $(id).addClass("setup-gameboard-square");
+                }
             }
         }
 
