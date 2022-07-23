@@ -225,9 +225,7 @@ class SetupBattleship {
         this.gameboard[i][j] = 1;
 
         // Change color of selected square
-        console.log("before color:"+id);
         this.colorSquare("#" + id, "darkblue");
-        console.log("after color:"+id)
         this.highlightSquare("#" + id, "white");
 
         const len = this.ships[currentShip]["length"];
@@ -280,7 +278,6 @@ class SetupBattleship {
             const squareID = "#sq" + a + "" + b;
             const idStr = "sq" + a + "" + b;
             $(document).one("click", squareID, { self: self, idStr: idStr, a: a, b: b }, function () {
-                console.log("Hitting this listener")
                 self.handleSquareClick(idStr, a, b);
             });
         })
