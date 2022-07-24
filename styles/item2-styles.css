@@ -4,6 +4,12 @@
     border: black solid 1px;
 }
 
+.user-hitboard-square {
+    background-color: white;
+    aspect-ratio: 1;
+    border: black solid 1px;
+}
+
 .setup-gameboard-square-ship {
     background-color: darkblue;
     aspect-ratio: 1;
@@ -22,6 +28,12 @@
 }
 
 .ship-container {
+    margin: 20px;
+    width:200px;
+    padding:3px;
+}
+
+.enemy-ship-container {
     margin: 20px;
     width:200px;
     padding:3px;

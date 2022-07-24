@@ -72,7 +72,7 @@ class SetupBattleship {
             // Add row div with num-specific id
             $("#setup-gameboard").append(`<div id="${"row" + i}"class="row">`);
             // Append each square individually
-            for (let j = 0; j <= 9; j++) {
+            for (let j = 0; j < 10; j++) {
                 this.setupGameboardHTMLSquare(i, j);
             }
             // Close row
@@ -93,7 +93,7 @@ class SetupBattleship {
         var self = this;
 
         // Append gamesquare to appropriate row w/ index specific id
-        $("#setup-gameboard").children(row).append(`<div id=${id} class="setup-gameboard-square col">${a + "" + b}</div>`);
+        $("#setup-gameboard").children(row).append(`<div id=${id} class="setup-gameboard-square col"></div>`);
     }
 
     /**
@@ -571,7 +571,7 @@ class SetupBattleship {
             this.ships["cruiser"].placed && this.ships["submarine"].placed &&
             this.ships["destroyer"].placed) {
 
-            $("#main-game-container").empty().load("pages/game/play.html");
+            $("#main-game-container").empty().load("pages/game/start.html");
 
         } else {
 

@@ -1,13 +1,121 @@
 class PlayBattleship {
 
+    // Takes user's created gameboard and ships object from SetupBattleship object
     constructor(gameboard, ships) {
+
+        // Randomly pick a player to start (0 - User, 1 - CPU)
+        this.startGame(this.getRandomInt(2));
+
+        // User's gameboard
         this.userBoard = gameboard;
-        this.userShips = ships;
+
+        // User's ship data
+        this.ships = ships;
+
+        // Names of ships for ease of iterating cpuShipLocations and userShipLocations
+        this.shipNames = ["carrier", "battleship", "cruiser", "submarine", "destroyer"]
+
+        // Holds i,j indices of all squares of CPU's ships
+        this.cpuShipLocations = {
+            carrier: [],
+            battleship: [],
+            cruiser: [],
+            submarine: [],
+            destroyer: []
+        }
+
+        // Copy location from userShips to easier-to-access object
+        this.userShipLocations = {
+            carrier: ships.carrier.location.map((x)=>x),
+            battleship: ships.battleship.location.map((x)=>x),
+            cruiser:ships.cruiser.location.map((x)=>x),
+            submarine: ships.submarine.location.map((x)=>x),
+            destroyer: ships.destroyer.location.map((x)=>x)
+        }
+
+        // CPU's gameboard
         this.cpuBoard = [];
-        this.createBoard();
+        this.simulateCpuBoard();
+
+        // User's hitboard
+        this.userHitBoard = this.createBoard();
+
+        // CPU's hitboard
+        this.cpuHitBoard = this.createBoard();
+
+        // Represents stage of game
+        this.stage;
+
+        // Used for this.stage
+        this.Stages = {
+            // CPU is preparing to hit
+            CPU_AIM,
+            // CPU has shot
+            CPU_HIT,
+            // User is preparing to hit
+            USER_AIM,
+            // User has shot
+            USER_HIT
+        }
     }
 
-    /** Creates 10 by 10 2D array board filled with 0's */
+    /**
+     * Displays start message w/ correct starter and listens for start button press
+     * @param {Number} rand 0 or 1 
+     */
+    startGame(rand){
+        // If random number is 0, user will start, else CPU will start.
+        const starter = (rand === 0 ? `<strong>You</strong>` : `The <strong>enemy</strong>`);
+        this.turn = (rand === 0 ? this.Stages.CPU_AIM : this.Stages.USER_AIM);
+
+        // Add starter to start message
+        $("#starter").append(starter);
+
+        var self = this;
+
+        // Add click listener to start button
+        $("#start-button").one("click", {self: self}, function() {
+            self.handleStartButton();
+        })
+    }
+
+    /**
+     * Depending on who starts, load appropriate HTML and display correct board
+     */
+    handleStartButton() {
+        var self = this;
+        if (this.stage === this.Stages.USER_AIM) {
+            $("#main-container").empty().load("pages/game/userAim.html", {self:self}, function() {
+                self.displayUserHitBoard();
+            });
+
+        } else if (this.stage === this.Stages.CPU_AIM) {
+            $("#main-container").empty().load("pages/game/cpuAim.html", {self:self}, function() {
+                self.displayCPUHitBoard();
+            });
+        }
+    }
+
+    /**
+     * Renders userHitBoard on userAim.html
+     * Adds click listeners to squares and continue button
+     */
+    displayUserHitBoard() {
+        for (let i = 0; i < 10; i++) {
+            // Add row div with num-specific id
+            $("#user-hitboard").append(`<div id="${"row" + i}"class="row">`);
+            // Append each square individually
+            for (let j = 0; j < 10; j++) {
+                this.setupGameboardHTMLSquare(i, j);
+            }
+            // Close row
+            $("#setup-gameboard").append('</div>');
+        }
+    }
+
+    /** 
+     * @returns 10x10 2D Number Array filled with 0's
+    */
     createBoard() {
 
         let board = [];
@@ -23,22 +131,22 @@ class PlayBattleship {
 
         }
 
-        this.cpuBoard = board;
-        this.simulateCpuBoard();
+        return board;
     }
 
     /**
      * Simulates CPU's board of ships by calling other helper functions
      */
     simulateCpuBoard() {
-
-        const shipArr = ["carrier", "battleship", "cruiser", "submarine", "destroyer"]
+        
+        // Create CPU board
+        this.cpuBoard = this.createBoard();
 
         // Iterates through ships
-        for (let k = 0; k < shipArr.length; k++) {
+        for (let k = 0; k < this.shipNames.length; k++) {
 
             // Length of end of ship
-            const len = this.userShips[shipArr[k]]['length'] - 1;
+            const len = this.ships[this.shipNames[k]]['length'] - 1;
 
             // i,j: stern indices - two random integers (0-9)
             // dir: direction of bow - random integer (0, 1, 2, 3 == up, down, left, right)
@@ -52,20 +160,22 @@ class PlayBattleship {
 
                 if (this.shipWorks(i, j, len, dir)) {
 
-                    this.placeShip(i, j, len, dir);
+                    this.placeShip(this.shipNames[k], i, j, len, dir);
                     placed = true;
 
                 }
             }
         }
+        console.log(this.cpuBoard)
+        console.log(this.cpuShipLocations);
     }
 
     /**
      * If ship fits on map, return true, else false.
-     * @param {*} i row index of stern
-     * @param {*} j column index of stern
-     * @param {*} len length of ship
-     * @param {*} dir direction of bow of ship from stern
+     * @param {Number} i row index of stern
+     * @param {Number} j column index of stern
+     * @param {Number} len length of ship
+     * @param {Number} dir direction of bow of ship from stern
      * @returns 
      */
     shipWorks(i, j, len, dir) {
@@ -91,10 +201,10 @@ class PlayBattleship {
     /**
      * If ship's length and direction allow it to fit on the map,
      * from the location of the stern, return true; else false.
-     * @param {*} i row index of stern
-     * @param {*} j column index of stern
-     * @param {*} len length of ship
-     * @param {*} dir direction of bow from stern
+     * @param {Number} i row index of stern
+     * @param {Number} j column index of stern
+     * @param {Number} len length of ship
+     * @param {Number} dir direction of bow from stern
      * @returns bool
      */
     shipFitsOnMap(i, j, len, dir) {
@@ -117,10 +227,10 @@ class PlayBattleship {
 
     /**
      * Checks if there are any other ships in ship-to-be-placed's way
-     * @param {*} i row index of stern
-     * @param {*} j column index of stern
-     * @param {*} len length of ship
-     * @param {*} dir direction of bow of ship from stern
+     * @param {Number} i row index of stern
+     * @param {Number} j column index of stern
+     * @param {Number} len length of ship
+     * @param {Number} dir direction of bow of ship from stern
      * @returns true if ship can be placed, false otherwise
      */
     shipCanBePlaced(i, j, len, dir) {
@@ -167,17 +277,19 @@ class PlayBattleship {
 
     /**
      * Places 1s to represent ship on this.cpuBoard
-     * @param {*} i row index of stern
-     * @param {*} j column index of stern
-     * @param {*} len length of ship
-     * @param {*} dir direction of bow of ship from stern
+     * @param {String}
+     * @param {Number} i row index of stern
+     * @param {Number} j column index of stern
+     * @param {Number} len length of ship
+     * @param {Number} dir direction of bow of ship from stern
      */
-    placeShip(i, j, len, dir) {
+    placeShip(ship, i, j, len, dir) {
         // If dir == 0 == up
         if (dir == 0) {
 
             for (let k = i; k >= (i - len); k--) {
                 this.cpuBoard[k][j] = 1;
+                this.cpuShipLocations[ship].push([k, j]);
             }
 
             // If dir == 1 == down
@@ -185,6 +297,7 @@ class PlayBattleship {
 
             for (let k = i; k <= (i + len); k++) {
                 this.cpuBoard[k][j] = 1;
+                this.cpuShipLocations[ship].push([k, j]);
             }
 
             // If dir == 2 == left
@@ -192,6 +305,7 @@ class PlayBattleship {
 
             for (let k = j; k >= (j - len); k--) {
                 this.cpuBoard[i][k] = 1;
+                this.cpuShipLocations[ship].push([i, k]);
             }
 
             // If dir == 3 == right
@@ -199,6 +313,7 @@ class PlayBattleship {
 
             for (let k = j; k <= (j + len); k++) {
                 this.cpuBoard[i][k] = 1;
+                this.cpuShipLocations[ship].push([i, k]);
             }
 
         }
@@ -220,5 +335,25 @@ class PlayBattleship {
      */
     getRandomInt(max) {
         return Math.floor(Math.random() * max);
+    }
+
+    /**
+     * Generates random i, j.
+     * Checks if spot has been already targeted at on own hitboard:
+     *      Not hit: continue
+     *      Hit: generate new random i, j
+     * Check user board for ship (on userboard: 1 if ship, 0 if missed)
+     *      Hit: display message that enemy has hit one ship
+     *          change userboard at spot to -1
+     *          change cpu hitboard at spot to 1
+     *          check if whole ship has been sunk
+     *              Sunk: display message, enemy has sunk your ship
+     *              Not sunk: do nothing
+     *      Missed: display message that enemy has missed your ship
+     *            change cpu hitboard at spot to -1
+     * Continue with game
+     */
+    simulateCpuHit() {
+
     }
 }
