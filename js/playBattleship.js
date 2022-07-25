@@ -41,6 +41,7 @@ class PlayBattleship {
 
         /**
          * User's and CPU's gameboards 
+         *      -2  - enemy's missed shot
          *      -1  - sunk ship
          *      0   - empty
          *      1   - afloat ship
@@ -60,6 +61,9 @@ class PlayBattleship {
 
         // Randomly pick a player to start (0 - User, 1 - CPU)
         this.startGame(this.getRandomInt(2));
+
+        // Holds [i,j] array of cpu's last hit
+        this.cpuLastHit = [];
     }
 
 
@@ -71,12 +75,11 @@ class PlayBattleship {
         var locations = {};
         for (let k = 0; k < 5; k++) {
 
-            this.ships[this.shipNames[k]].location.forEach( (arr) => {
-                locations[arr[0]+""+arr[1]] = this.shipNames[k];
+            this.ships[this.shipNames[k]].location.forEach((arr) => {
+                locations[arr[0] + "" + arr[1]] = this.shipNames[k];
             })
 
         }
-        console.log(locations)
         return locations;
     }
 
@@ -87,8 +90,7 @@ class PlayBattleship {
     startGame(rand) {
         // If random number is 0, user will start, else CPU will start.
         const starter = (rand === 0 ? `<strong>You</strong>` : `The <strong>enemy</strong>`);
-        // this.turn = (rand === 0 ? this.Turns.USER : this.Turns.CPU);
-        this.turn = this.Turns.USER;
+        this.turn = (rand === 0 ? this.Turns.USER : this.Turns.CPU);
 
         // Add starter to start message
         $("#starter").append(starter);
@@ -116,6 +118,10 @@ class PlayBattleship {
 
             $("#cpu-aim").hide();
             $("#user-aim").show();
+
+            // Change message back to original
+            $("#user-aim-main-message").empty().append("Your turn to shoot at the enemy's ships!")
+
             this.displayBoard("#user-hitboard");
 
             // If its the CPU's turn to shoot, display the user's gameboard.
@@ -123,15 +129,27 @@ class PlayBattleship {
 
             $("#user-aim").hide();
             $("#cpu-aim").show();
+
+            // Change message back to original
+            $("#enemy-aim-main-message").empty().append("The enemy's turn to shoot at your ships!")
+
+            // Replace continue button with "Let the enemy shoot!" button
+            $("#enemy-aim-continue").hide();
+            $("#enemy-aim-shoot").show();
+
             this.displayBoard("#user-gameboard");
         }
     }
 
     /**
-     * Renders board
+     * Renders board's rows
      * @param {String} boardID id of board DOM element
      */
     displayBoard(boardID) {
+        // Empty the board's div
+        $(boardID).empty();
+
+        // Give appropriate row name based on id
         let row;
         if (boardID === "#user-hitboard") {
             row = "hitrow";
@@ -150,6 +168,8 @@ class PlayBattleship {
             $(boardID).append('</div>');
 
         }
+
+        var self = this;
 
         // Add listeners to squares if user's turn to hit
         if (boardID === "#user-hitboard") {
@@ -184,7 +204,7 @@ class PlayBattleship {
 
             // Give specific style based on individual square
             if (status == 0) {
-                color = "white";
+                color = "lightskyblue";
             } else if (status == 1) {
                 color = "red";
             } else if (status == -1) {
@@ -203,6 +223,8 @@ class PlayBattleship {
                 color = "darkblue";
             } else if (status == -1) {
                 color = "red";
+            } else if (status == -2) {
+                color = "grey";
             }
         }
 
@@ -214,7 +236,7 @@ class PlayBattleship {
     /**
      *       
      */
-    handleUserHit(id) {
+    handleUserShot(id) {
         // idArr = ['h', 'i', 't', 's', 'q', *i, *j]
         var idArr = id.split("");
         const i = parseInt(idArr[5]);
@@ -242,7 +264,7 @@ class PlayBattleship {
             this.userHitboard[i][j] = -1;
 
             // Change square's color to grey
-            $("#"+id).css("background-color", "grey");
+            $("#" + id).css("background-color", "grey");
 
             message = "Sorry, you missed! Better luck next time.";
 
@@ -250,7 +272,7 @@ class PlayBattleship {
         } else if (this.cpuGameboard[i][j] == 1) {
 
             // Change square's color to red
-            $("#"+id).css("background-color", "red");
+            $("#" + id).css("background-color", "red");
 
             // Change user's hitboard to reflect a hit
             this.userHitboard[i][j] = 1;
@@ -299,7 +321,7 @@ class PlayBattleship {
 
         var self = this;
         $(document).one("click", ".user-hitboard-square", { self: self }, function () {
-            self.handleUserHit(this.id);
+            self.handleUserShot(this.id);
         });
 
     }
@@ -357,7 +379,8 @@ class PlayBattleship {
                 }
             }
         }
-        console.log(this.cpuGameboard);
+        console.log("CPU Gameboard:")
+        console.log(this.cpuGameboard)
     }
 
     /**
@@ -426,7 +449,7 @@ class PlayBattleship {
     shipCanBePlaced(i, j, len, dir) {
         // If dir == 0 == up
         if (dir == 0) {
-            for (let k = i; k > (i - len); k--) {
+            for (let k = i; k >= (i - len); k--) {
 
                 if (this.cpuGameboard[k][j] !== 0) {
                     return false;
@@ -435,7 +458,7 @@ class PlayBattleship {
             }
             // If dir == 1 == down
         } else if (dir == 1) {
-            for (let k = i; k < (i + len); k++) {
+            for (let k = i; k <= (i + len); k++) {
 
                 if (this.cpuGameboard[k][j] !== 0) {
                     return false;
@@ -444,7 +467,7 @@ class PlayBattleship {
             }
             // If dir == 2 == left
         } else if (dir == 2) {
-            for (let k = j; k > (j - len); k--) {
+            for (let k = j; k >= (j - len); k--) {
 
                 if (this.cpuGameboard[i][k] !== 0) {
                     return false;
@@ -453,7 +476,7 @@ class PlayBattleship {
             }
             // If dir == 3 == right
         } else if (dir == 3) {
-            for (let k = j; k < (j + len); k++) {
+            for (let k = j; k <= (j + len); k++) {
 
                 if (this.cpuGameboard[i][k] !== 0) {
                     return false;
@@ -532,6 +555,7 @@ class PlayBattleship {
     }
 
     /**
+     * Check if last 
      * Generates random i, j.
      * Checks if spot has been already targeted at on own hitboard:
      *      Not hit: continue
@@ -548,6 +572,144 @@ class PlayBattleship {
      * Continue with game
      */
     simulateCpuHit() {
+        console.log("Entering simulateCpuHit()")
+        var i, j;
 
+        // If cpuLastHit has a value
+        if (this.cpuLastHit.length !== 0) {
+
+            // Grab the indices of the last hit
+            [i, j] = this.cpuLastHit;
+
+            // Directions array makes sure only 4 directions are tried before moving on
+            var directions = [0, 1, 2, 3]
+            while (directions.length !== 0) {
+
+                // Variables to prevent multiple changes to i and j
+                var iTemp = i;
+                var jTemp = j;
+
+                // Generate a new random direction from directions
+                var rand = this.getRandomInt(directions.length);
+                var dir = directions[rand];
+                directions.splice(rand, 1);
+
+                // Adjust iTemp or jTemp based on direction
+                (dir === 0 ? iTemp -= 1 : (dir === 1 ? iTemp += 1 : (dir === 2 ? jTemp -= 1 : jTemp += 1)));
+
+                // Check if spot is available to shoot at (board-bounds-wise and shot-at-before-wise)
+                if ( iTemp >= 0 && iTemp <= 9 && jTemp >= 0 && jTemp <= 9 &&
+                    this.cpuHitboard[iTemp][jTemp] === 0) {
+
+                    // Handle hit/miss
+                    this.handleCpuShot(iTemp, jTemp)
+
+                    // Exit while loop and function
+                    return;
+                }
+
+                
+            }
+        }
+        // If this.cpuLastHit has no value or all squares around were shot at, generate new i and j
+        [i, j] = [this.getRandomInt(10), this.getRandomInt(10)];
+
+        // Continue generating new indices until the spot i,j has not been shot at before
+        while (this.cpuHitboard[i][j] !== 0) {
+
+            [i, j] = [this.getRandomInt(10), this.getRandomInt(10)]
+
+        }
+
+        // Handle hit/miss
+        this.handleCpuShot(i, j);
+
+    }
+
+    /**
+     * Handles whether CPU hit or missed the user's ship
+     * @param {Number} i row index of spot being shot at
+     * @param {Number} j column index of spot being shot at
+     */
+    handleCpuShot(i, j) {
+
+        console.log("Entering handleCpuShot: "+i+", "+j)
+        // Hide the "Let the enemy shoot!" button and show the continue button
+        $("#enemy-aim-shoot").hide();
+        $("#enemy-aim-continue").show();
+
+        var message;
+
+        // If the shot missed
+        if (this.userGameboard[i][j] === 0) {
+            console.log("MISSED -------");
+            console.log("CPU HITBOARD")
+            console.log(this.cpuHitboard);
+
+            // Change square's color to grey
+            $("#gamesq" + i + "" + j).css("background-color", "grey");
+
+            // Miss message
+            message = "The enemy missed. You got lucky this time!";
+
+            // Mark cpuHitboard with a miss
+            this.cpuHitboard[i][j] = -1;
+
+            // Mark the userGameboard with an enemy's miss
+            this.userGameboard[i][j] = -2;
+
+            // If the shot hit
+        } else if (this.userGameboard[i][j] === 1) {
+            console.log("HIT -------")
+            console.log("CPU HITBOARD")
+            console.log(this.cpuHitboard);
+            
+            console.log("USER GAMEBOARD")
+            console.log(this.userGameboard);
+
+            // Change square's color to red
+            $("#gamesq" + i + "" + j).css("background-color", "red");
+
+            // Change CPU's hitboard to reflect a hit
+            this.cpuHitboard[i][j] = 1;
+
+            // Mark the user's gameboard with a hit ship
+            this.userGameboard[i][j] = -1;
+
+            // Grab name of ship
+            const ship = this.userShipLocations[i + "" + j];
+
+            // Subtract a square from ship that was hit
+            this.userShipLeft[ship] -= 1;
+
+            // If the ship that was hit has no squares left, 
+            // display sunk message and empty cpuLastHit.
+            if (this.userShipLeft[ship] === 0) {
+                message = `Oh no! The enemy sunk your ${ship}! Let's get revenge!`;
+                this.cpuLastHit = [];
+            } else {
+
+                // If the ship has more squares left, 
+                // display hit message and replace indices in cpuLastHit.
+                message = `Uh oh! The enemy hit your ${ship}!`;
+                this.cpuLastHit = [i, j];
+            }
+
+            // Remove that square from the user's ship locations
+            delete this.userShipLocations[i + "" + j]
+        }
+
+        // Display message
+        $("#enemy-aim-main-message").empty().append(message);
+
+        // Change the turn to user
+        this.turn = this.Turns.USER;
+
+        var self=this;
+
+        // Add listener to continue button
+        $(document).one("click", "#enemy-aim-continue-button", { self: self }, function () {
+            self.handleGameFlow();
+        })
     }
 }

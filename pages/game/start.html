@@ -98,7 +98,7 @@
 <!-- CPU AIM DISPLAY -->
 
 <div id="cpu-aim" style="display:none;">
-    <h3 style="text-align:center;">The enemy's turn to shoot at your ships!</h3>
+    <h3 id="enemy-aim-main-message" style="text-align:center;">The enemy's turn to shoot at your ships!</h3>
     <div class="container" style="margin-top: 6%;">
         <div class="row justify-content-start">
             <div class="col-3">
@@ -165,10 +165,10 @@
                         </ol>
                     </div>
                 </div>
-                <div style="display:none; margin-top:5%" class="row">
+                <div id="enemy-aim-continue"style="display:none; margin-top:5%" class="row">
                     <button id="enemy-aim-continue-button" class="btn btn-success btn-lg btn-block">Continue</button>
                 </div>
-                <div style="margin-top:5%" class="row">
+                <div id="enemy-aim-shoot" style="margin-top:5%" class="row">
                     <button id="enemy-aim-shoot-button" class="btn btn-success btn-lg btn-block">Let the enemy
                         shoot!</button>
                 </div>
