@@ -1,6 +1,9 @@
 <script src="js/setupBattleship.js"></script>
 <script type="application/javascript">
-    let setupBattleship = new SetupBattleship();
+    console.log(typeof setupBattleship);
+    if (typeof setupBattleship === "undefined") {
+        var setupBattleship = new SetupBattleship();
+    }
 </script>
 
 

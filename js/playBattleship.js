@@ -72,7 +72,7 @@ class PlayBattleship {
      * @returns object to be placed as this.userShipLocations
      */
     initUserShipLocations() {
-        var locations = {};
+        let locations = {};
         for (let k = 0; k < 5; k++) {
 
             this.ships[this.shipNames[k]].location.forEach((arr) => {
@@ -89,13 +89,16 @@ class PlayBattleship {
      */
     startGame(rand) {
         // If random number is 0, user will start, else CPU will start.
-        const starter = (rand === 0 ? `<strong>You</strong>` : `The <strong>enemy</strong>`);
+        const starterMessage = (rand === 0 ? `<strong>You</strong>` : `The <strong>enemy</strong>`);
         this.turn = (rand === 0 ? this.Turns.USER : this.Turns.CPU);
+        this.starter = this.turn;
+        console.log("STARTER: "+this.starter)
+        console.log("Turn: " + this.turn)
 
         // Add starter to start message
-        $("#starter").append(starter);
+        $("#starter").append(starterMessage);
 
-        var self = this;
+        let self = this;
 
         // Add click listener to start button
         $("#start-button").one("click", { self: self }, function () {
@@ -109,9 +112,14 @@ class PlayBattleship {
      * Depending on stage, display appropriate HTML and display correct board
      */
     handleGameFlow() {
+        console.log("handleGameFlow")
 
-        // SHOULD CHECK GAME CONDITIONS FOR WIN
-        //this.checkForWin()
+        // If the non-starter just finished their turn
+        if (this.turn == this.starter) {
+            if (this.checkForWin()) {
+                return;
+            }
+        }
 
         // If its the User's turn to shoot, display the user's hitboard.
         if (this.turn === this.Turns.USER) {
@@ -121,6 +129,9 @@ class PlayBattleship {
 
             // Change message back to original
             $("#user-aim-main-message").empty().append("Your turn to shoot at the enemy's ships!")
+
+            // Hide continue button
+            $("#user-aim-continue").hide();
 
             this.displayBoard("#user-hitboard");
 
@@ -139,6 +150,57 @@ class PlayBattleship {
 
             this.displayBoard("#user-gameboard");
         }
+    }
+
+    /**
+     * Checks for win/draw conditions after non-starter's turn
+     */
+    checkForWin() {
+
+        const cpuFleetSunk = Object.keys(this.cpuShipLocations).length == 0;
+        const userFleetSunk = Object.keys(this.userShipLocations).length == 0;
+        console.log("cpuFleetSunk"+cpuFleetSunk)
+        console.log("userFleetSunk"+userFleetSunk)
+
+        // Game is not finished
+        if (!cpuFleetSunk && !userFleetSunk) {
+            
+            console.log("All good")
+            return false;
+        }
+        console.log("Uh-oh")
+
+        // Hide both displays
+        $("#user-aim").hide();
+        $("#cpu-aim").hide();
+
+        let message;
+        let color;
+
+        // User WIN- only CPU's fleet is sunk
+        if (cpuFleetSunk && !userFleetSunk) {
+            message = "Congratulations!<br><br> You have sunk the enemy's fleet and <strong>won the game!</strong>";
+            color = "green";
+
+            // CPU WIN - only User's fleet is sunk
+        } else if (!cpuFleetSunk && userFleetSunk) {
+            message = "Aw man! The enemy has sunk your whole fleet.<br><br><strong>They have won the game.</strong>";
+            color = "red";
+
+            // DRAW - both fleets are sunk
+        } else {
+            message = "What a game!<br>You and the enemy have sunk each other's fleets.<br><br><strong>It's a draw!</strong>"
+            color = "darkblue";
+            
+        }
+
+        $("#end-of-game").show();
+        $("#end-of-game-message").empty().append(message).css("color", color);
+        $(document).one("click", "#end-of-game-reload", function() {
+            location.reload(true);
+        })
+        return true;
+
     }
 
     /**
@@ -169,7 +231,7 @@ class PlayBattleship {
 
         }
 
-        var self = this;
+        let self = this;
 
         // Add listeners to squares if user's turn to hit
         if (boardID === "#user-hitboard") {
@@ -198,7 +260,7 @@ class PlayBattleship {
         // Give specific id and class names based on board
         if (boardID === "#user-hitboard") {
 
-            var status = this.userHitboard[i][j];
+            let status = this.userHitboard[i][j];
             className = "user-hitboard-square";
             squareID = "hitsq" + i + "" + j;
 
@@ -213,7 +275,7 @@ class PlayBattleship {
 
         } else if (boardID === "#user-gameboard") {
 
-            var status = this.userGameboard[i][j];
+            let status = this.userGameboard[i][j];
             className = "user-gameboard-square";
             squareID = "gamesq" + i + "" + j;
 
@@ -238,7 +300,7 @@ class PlayBattleship {
      */
     handleUserShot(id) {
         // idArr = ['h', 'i', 't', 's', 'q', *i, *j]
-        var idArr = id.split("");
+        let idArr = id.split("");
         const i = parseInt(idArr[5]);
         const j = parseInt(idArr[6]);
 
@@ -307,7 +369,8 @@ class PlayBattleship {
         this.turn = this.Turns.CPU;
 
         // Add listener to continue button
-        var self = this;
+        let self = this;
+        $("#user-aim-continue").show();
         $(document).one("click", "#user-aim-continue-button", { self: self }, function () {
             self.handleGameFlow();
         })
@@ -319,7 +382,7 @@ class PlayBattleship {
      */
     addHitListeners() {
 
-        var self = this;
+        let self = this;
         $(document).one("click", ".user-hitboard-square", { self: self }, function () {
             self.handleUserShot(this.id);
         });
@@ -363,7 +426,7 @@ class PlayBattleship {
 
             // i,j: stern indices - two random integers (0-9)
             // dir: direction of bow - random integer (0, 1, 2, 3 == up, down, left, right)
-            var i, j, dir;
+            let i, j, dir;
             let placed = false;
 
             // Generate new indices and direction until ship is be placed
@@ -379,8 +442,6 @@ class PlayBattleship {
                 }
             }
         }
-        console.log("CPU Gameboard:")
-        console.log(this.cpuGameboard)
     }
 
     /**
@@ -503,7 +564,6 @@ class PlayBattleship {
             for (let k = i; k >= (i - len); k--) {
                 this.cpuGameboard[k][j] = 1;
                 this.cpuShipLocations[k + "" + j] = ship;
-                // this.cpuShipLocations[ship].push([k, j]);
             }
 
             // If dir == 1 == down
@@ -512,7 +572,6 @@ class PlayBattleship {
             for (let k = i; k <= (i + len); k++) {
                 this.cpuGameboard[k][j] = 1;
                 this.cpuShipLocations[k + "" + j] = ship;
-                // this.cpuShipLocations[ship].push([k, j]);
             }
 
             // If dir == 2 == left
@@ -521,7 +580,6 @@ class PlayBattleship {
             for (let k = j; k >= (j - len); k--) {
                 this.cpuGameboard[i][k] = 1;
                 this.cpuShipLocations[i + "" + k] = ship;
-                // this.cpuShipLocations[ship].push([i, k]);
             }
 
             // If dir == 3 == right
@@ -530,7 +588,6 @@ class PlayBattleship {
             for (let k = j; k <= (j + len); k++) {
                 this.cpuGameboard[i][k] = 1;
                 this.cpuShipLocations[i + "" + k] = ship;
-                // this.cpuShipLocations[ship].push([i, k]);
             }
 
         }
@@ -572,8 +629,8 @@ class PlayBattleship {
      * Continue with game
      */
     simulateCpuHit() {
-        console.log("Entering simulateCpuHit()")
-        var i, j;
+
+        let i, j;
 
         // If cpuLastHit has a value
         if (this.cpuLastHit.length !== 0) {
@@ -582,23 +639,23 @@ class PlayBattleship {
             [i, j] = this.cpuLastHit;
 
             // Directions array makes sure only 4 directions are tried before moving on
-            var directions = [0, 1, 2, 3]
+            let directions = [0, 1, 2, 3]
             while (directions.length !== 0) {
 
-                // Variables to prevent multiple changes to i and j
-                var iTemp = i;
-                var jTemp = j;
+                // letiables to prevent multiple changes to i and j
+                let iTemp = i;
+                let jTemp = j;
 
                 // Generate a new random direction from directions
-                var rand = this.getRandomInt(directions.length);
-                var dir = directions[rand];
+                let rand = this.getRandomInt(directions.length);
+                let dir = directions[rand];
                 directions.splice(rand, 1);
 
                 // Adjust iTemp or jTemp based on direction
                 (dir === 0 ? iTemp -= 1 : (dir === 1 ? iTemp += 1 : (dir === 2 ? jTemp -= 1 : jTemp += 1)));
 
                 // Check if spot is available to shoot at (board-bounds-wise and shot-at-before-wise)
-                if ( iTemp >= 0 && iTemp <= 9 && jTemp >= 0 && jTemp <= 9 &&
+                if (iTemp >= 0 && iTemp <= 9 && jTemp >= 0 && jTemp <= 9 &&
                     this.cpuHitboard[iTemp][jTemp] === 0) {
 
                     // Handle hit/miss
@@ -608,7 +665,7 @@ class PlayBattleship {
                     return;
                 }
 
-                
+
             }
         }
         // If this.cpuLastHit has no value or all squares around were shot at, generate new i and j
@@ -633,18 +690,14 @@ class PlayBattleship {
      */
     handleCpuShot(i, j) {
 
-        console.log("Entering handleCpuShot: "+i+", "+j)
         // Hide the "Let the enemy shoot!" button and show the continue button
         $("#enemy-aim-shoot").hide();
         $("#enemy-aim-continue").show();
 
-        var message;
+        let message;
 
         // If the shot missed
         if (this.userGameboard[i][j] === 0) {
-            console.log("MISSED -------");
-            console.log("CPU HITBOARD")
-            console.log(this.cpuHitboard);
 
             // Change square's color to grey
             $("#gamesq" + i + "" + j).css("background-color", "grey");
@@ -660,12 +713,6 @@ class PlayBattleship {
 
             // If the shot hit
         } else if (this.userGameboard[i][j] === 1) {
-            console.log("HIT -------")
-            console.log("CPU HITBOARD")
-            console.log(this.cpuHitboard);
-            
-            console.log("USER GAMEBOARD")
-            console.log(this.userGameboard);
 
             // Change square's color to red
             $("#gamesq" + i + "" + j).css("background-color", "red");
@@ -705,7 +752,7 @@ class PlayBattleship {
         // Change the turn to user
         this.turn = this.Turns.USER;
 
-        var self=this;
+        let self = this;
 
         // Add listener to continue button
         $(document).one("click", "#enemy-aim-continue-button", { self: self }, function () {
