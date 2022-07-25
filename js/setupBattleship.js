@@ -303,7 +303,7 @@ class SetupBattleship {
         function addSquare(x, y, self) {
             self.gameboard[x][y] = 1;
             self.ships[currentShip].location.push([x, y]);
-            $("#sq" + x + "" + y).removeClass("setup-gameboard-square").css("background-color", "darkblue").css("border", "1px white solid").css("aspect-ratio", 1);
+            $("#sq" + x + "" + y).removeClass("setup-gameboard-square").css("background-color", "darkblue").css("border", "1px white solid").css("aspect-ratio", "1");
         }
 
         // Bow is lower than stern
