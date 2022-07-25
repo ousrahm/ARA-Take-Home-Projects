@@ -10,6 +10,13 @@
     border: black solid 1px;
 }
 
+
+.user-gameboard-square {
+    background-color: white;
+    aspect-ratio: 1;
+    border: black solid 1px;
+}
+
 .setup-gameboard-square-ship {
     background-color: darkblue;
     aspect-ratio: 1;
@@ -37,6 +44,12 @@
     margin: 20px;
     width:200px;
     padding:3px;
+}
+
+.user-ship-container {
+    margin: 20px;
+    width: 200px;
+    padding: 3px;
 }
 
 .setup-error-message {

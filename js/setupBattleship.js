@@ -90,7 +90,6 @@ class SetupBattleship {
     setupGameboardHTMLSquare(a, b) {
         const row = "#row" + a;
         const id = "sq" + a + "" + b;
-        var self = this;
 
         // Append gamesquare to appropriate row w/ index specific id
         $("#setup-gameboard").children(row).append(`<div id=${id} class="setup-gameboard-square col"></div>`);

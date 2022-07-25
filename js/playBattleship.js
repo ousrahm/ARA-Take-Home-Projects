@@ -3,70 +3,92 @@ class PlayBattleship {
     // Takes user's created gameboard and ships object from SetupBattleship object
     constructor(gameboard, ships) {
 
-        // Randomly pick a player to start (0 - User, 1 - CPU)
-        this.startGame(this.getRandomInt(2));
-
-        // User's gameboard
-        this.userBoard = gameboard;
-
         // User's ship data
         this.ships = ships;
 
         // Names of ships for ease of iterating cpuShipLocations and userShipLocations
         this.shipNames = ["carrier", "battleship", "cruiser", "submarine", "destroyer"]
 
-        // Holds i,j indices of all squares of CPU's ships
-        this.cpuShipLocations = {
-            carrier: [],
-            battleship: [],
-            cruiser: [],
-            submarine: [],
-            destroyer: []
+        // Locations of squares of ships
+        //   Format - "{Number(0-9)}{Number(0-9)}: {Name of Ship}"
+        this.cpuShipLocations = {};
+        this.userShipLocations = this.initUserShipLocations();
+
+        // Number of squares a ship has left
+        this.cpuShipLeft = {
+            carrier: 5,
+            battleship: 4,
+            cruiser: 3,
+            submarine: 3,
+            destroyer: 2
         }
-
-        // Copy location from userShips to easier-to-access object
-        this.userShipLocations = {
-            carrier: ships.carrier.location.map((x)=>x),
-            battleship: ships.battleship.location.map((x)=>x),
-            cruiser:ships.cruiser.location.map((x)=>x),
-            submarine: ships.submarine.location.map((x)=>x),
-            destroyer: ships.destroyer.location.map((x)=>x)
+        this.userShipLeft = {
+            carrier: 5,
+            battleship: 4,
+            cruiser: 3,
+            submarine: 3,
+            destroyer: 2
         }
-
-        // CPU's gameboard
-        this.cpuBoard = [];
-        this.simulateCpuBoard();
-
-        // User's hitboard
-        this.userHitBoard = this.createBoard();
-
-        // CPU's hitboard
-        this.cpuHitBoard = this.createBoard();
 
         // Represents stage of game
-        this.stage;
+        this.turn;
 
-        // Used for this.stage
-        this.Stages = {
-            // CPU is preparing to hit
-            CPU_AIM,
-            // CPU has shot
-            CPU_HIT,
-            // User is preparing to hit
-            USER_AIM,
-            // User has shot
-            USER_HIT
+        // Used for this.turn
+        this.Turns = {
+            CPU: "CPU",
+            USER: "USER"
         }
+
+        /**
+         * User's and CPU's gameboards 
+         *      -1  - sunk ship
+         *      0   - empty
+         *      1   - afloat ship
+         */
+        this.userGameboard = gameboard;
+        this.cpuGameboard = [];
+        this.simulateCpuGameboard();
+
+        /**
+         * User's and CPU's hitboards
+         *      -1  - missed ship
+         *      0   - empty
+         *      1   - hit ship
+         */
+        this.userHitboard = this.createBoard();
+        this.cpuHitboard = this.createBoard();
+
+        // Randomly pick a player to start (0 - User, 1 - CPU)
+        this.startGame(this.getRandomInt(2));
+    }
+
+
+    /**
+     * Converts locations from ships object to correct format for userShipLocations
+     * @returns object to be placed as this.userShipLocations
+     */
+    initUserShipLocations() {
+        var locations = {};
+        for (let k = 0; k < 5; k++) {
+
+            this.ships[this.shipNames[k]].location.forEach( (arr) => {
+                locations[arr[0]+""+arr[1]] = this.shipNames[k];
+            })
+
+        }
+        console.log(locations)
+        return locations;
     }
 
     /**
      * Displays start message w/ correct starter and listens for start button press
      * @param {Number} rand 0 or 1 
      */
-    startGame(rand){
+    startGame(rand) {
         // If random number is 0, user will start, else CPU will start.
         const starter = (rand === 0 ? `<strong>You</strong>` : `The <strong>enemy</strong>`);
-        this.turn = (rand === 0 ? this.Stages.CPU_AIM : this.Stages.USER_AIM);
+        // this.turn = (rand === 0 ? this.Turns.USER : this.Turns.CPU);
+        this.turn = this.Turns.USER;
 
         // Add starter to start message
         $("#starter").append(starter);
@@ -74,43 +96,212 @@ class PlayBattleship {
         var self = this;
 
         // Add click listener to start button
-        $("#start-button").one("click", {self: self}, function() {
-            self.handleStartButton();
+        $("#start-button").one("click", { self: self }, function () {
+            self.handleGameFlow();
+            // Hide the start
+            $("#start").hide();
         })
     }
 
     /**
-     * Depending on who starts, load appropriate HTML and display correct board
+     * Depending on stage, display appropriate HTML and display correct board
      */
-    handleStartButton() {
-        var self = this;
-        if (this.stage === this.Stages.USER_AIM) {
-            $("#main-container").empty().load("pages/game/userAim.html", {self:self}, function() {
-                self.displayUserHitBoard();
-            });
+    handleGameFlow() {
 
-        } else if (this.stage === this.Stages.CPU_AIM) {
-            $("#main-container").empty().load("pages/game/cpuAim.html", {self:self}, function() {
-                self.displayCPUHitBoard();
-            });
+        // SHOULD CHECK GAME CONDITIONS FOR WIN
+        //this.checkForWin()
+
+        // If its the User's turn to shoot, display the user's hitboard.
+        if (this.turn === this.Turns.USER) {
+
+            $("#cpu-aim").hide();
+            $("#user-aim").show();
+            this.displayBoard("#user-hitboard");
+
+            // If its the CPU's turn to shoot, display the user's gameboard.
+        } else if (this.turn === this.Turns.CPU) {
+
+            $("#user-aim").hide();
+            $("#cpu-aim").show();
+            this.displayBoard("#user-gameboard");
         }
     }
 
     /**
-     * Renders userHitBoard on userAim.html
-     * Adds click listeners to squares and continue button
+     * Renders board
+     * @param {String} boardID id of board DOM element
      */
-    displayUserHitBoard() {
+    displayBoard(boardID) {
+        let row;
+        if (boardID === "#user-hitboard") {
+            row = "hitrow";
+        } else if (boardID === "#user-gameboard") {
+            row = "gamerow";
+        }
+
         for (let i = 0; i < 10; i++) {
             // Add row div with num-specific id
-            $("#user-hitboard").append(`<div id="${"row" + i}"class="row">`);
+            $(boardID).append(`<div id="${row + i}"class="row">`);
             // Append each square individually
             for (let j = 0; j < 10; j++) {
-                this.setupGameboardHTMLSquare(i, j);
+                this.displayBoardSquare(i, j, boardID, row + i);
             }
             // Close row
-            $("#setup-gameboard").append('</div>');
+            $(boardID).append('</div>');
+
         }
+
+        // Add listeners to squares if user's turn to hit
+        if (boardID === "#user-hitboard") {
+            this.addHitListeners();
+
+            // Add listener to "Let enemy shoot!" button if CPU's turn to hit
+        } else if (boardID === "#user-gameboard") {
+            $(document).one("click", "#enemy-aim-shoot-button", { self: self }, function () {
+                self.simulateCpuHit();
+            })
+        }
+    }
+
+    /**
+     * Based on step and board[][] number (-1, 0, 1), assign style and ID to square
+     * and append square HTML
+     * @param {Number} i row index of square
+     * @param {Number} j column index of square
+     * @param {String} boardID id of board (Wuser-hitboard or #user-gameboard)
+     */
+    displayBoardSquare(i, j, boardID, row) {
+        let squareID;
+        let color;
+        let className;
+
+        // Give specific id and class names based on board
+        if (boardID === "#user-hitboard") {
+
+            var status = this.userHitboard[i][j];
+            className = "user-hitboard-square";
+            squareID = "hitsq" + i + "" + j;
+
+            // Give specific style based on individual square
+            if (status == 0) {
+                color = "white";
+            } else if (status == 1) {
+                color = "red";
+            } else if (status == -1) {
+                color = "grey";
+            }
+
+        } else if (boardID === "#user-gameboard") {
+
+            var status = this.userGameboard[i][j];
+            className = "user-gameboard-square";
+            squareID = "gamesq" + i + "" + j;
+
+            if (status == 0) {
+                color = "white";
+            } else if (status == 1) {
+                color = "darkblue";
+            } else if (status == -1) {
+                color = "red";
+            }
+        }
+
+        // Append gamesquare to appropriate row w/ index specific id
+        $(boardID).children("#" + row).append(`<div id=${squareID} class="${className} col"></div>`);
+        $("#" + squareID).css("background-color", color);
+    }
+
+    /**
+     *       
+     */
+    handleUserHit(id) {
+        // idArr = ['h', 'i', 't', 's', 'q', *i, *j]
+        var idArr = id.split("");
+        const i = parseInt(idArr[5]);
+        const j = parseInt(idArr[6]);
+
+        // Check if square has been hit by user before
+        if (this.userHitboard[i][j] !== 0) {
+
+            // Display message that that spot has been hit before
+            $("#user-hit-before").fadeIn("slow", function () {
+                $("#user-hit-before").fadeOut(1000);
+            });
+
+            // Add listeners back to user's hitboard squares
+            this.addHitListeners();
+            return;
+        }
+
+        let message;
+
+        // Check if CPU's gameboard has no ship there
+        if (this.cpuGameboard[i][j] == 0) {
+
+            // Change user's hitboard to reflect a miss
+            this.userHitboard[i][j] = -1;
+
+            // Change square's color to grey
+            $("#"+id).css("background-color", "grey");
+
+            message = "Sorry, you missed! Better luck next time.";
+
+            // Check if CPU's gameboard has a ship there
+        } else if (this.cpuGameboard[i][j] == 1) {
+
+            // Change square's color to red
+            $("#"+id).css("background-color", "red");
+
+            // Change user's hitboard to reflect a hit
+            this.userHitboard[i][j] = 1;
+
+            // Mark the CPU's gameboard with a hit ship
+            this.cpuGameboard[i][j] = -1;
+
+            // Grab name of ship
+            const ship = this.cpuShipLocations[i + "" + j];
+
+            // Subtract a square from ship that was hit
+            this.cpuShipLeft[ship] -= 1;
+
+            // If the ship that was hit has no squares left, display sunk message.
+            if (this.cpuShipLeft[ship] === 0) {
+                message = `Wow! You sunk the enemy's ${ship}! Way to go!`;
+            } else {
+
+                // If it has more squares left, display hit message.
+                message = `Boom! You hit the enemy's ${ship}!`;
+            }
+
+            // Remove that square from the cpu's ship locations
+            delete this.cpuShipLocations[i + "" + j]
+
+        }
+
+        // Display message
+        $("#user-aim-main-message").empty().append(message);
+
+        // Change game's turn
+        this.turn = this.Turns.CPU;
+
+        // Add listener to continue button
+        var self = this;
+        $(document).one("click", "#user-aim-continue-button", { self: self }, function () {
+            self.handleGameFlow();
+        })
+
+    }
+
+    /**
+     * Adds listeners to hitboard squares
+     */
+    addHitListeners() {
+
+        var self = this;
+        $(document).one("click", ".user-hitboard-square", { self: self }, function () {
+            self.handleUserHit(this.id);
+        });
+
     }
 
     /** 
@@ -137,10 +328,10 @@ class PlayBattleship {
     /**
      * Simulates CPU's board of ships by calling other helper functions
      */
-    simulateCpuBoard() {
-        
+    simulateCpuGameboard() {
+
         // Create CPU board
-        this.cpuBoard = this.createBoard();
+        this.cpuGameboard = this.createBoard();
 
         // Iterates through ships
         for (let k = 0; k < this.shipNames.length; k++) {
@@ -166,8 +357,7 @@ class PlayBattleship {
                 }
             }
         }
-        console.log(this.cpuBoard)
-        console.log(this.cpuShipLocations);
+        console.log(this.cpuGameboard);
     }
 
     /**
@@ -181,7 +371,7 @@ class PlayBattleship {
     shipWorks(i, j, len, dir) {
 
         // 1. Check if indices are on a ship
-        if (this.cpuBoard[i][j] !== 0) {
+        if (this.cpuGameboard[i][j] !== 0) {
             return false;
         }
 
@@ -238,7 +428,7 @@ class PlayBattleship {
         if (dir == 0) {
             for (let k = i; k > (i - len); k--) {
 
-                if (this.cpuBoard[k][j] !== 0) {
+                if (this.cpuGameboard[k][j] !== 0) {
                     return false;
                 }
 
@@ -247,7 +437,7 @@ class PlayBattleship {
         } else if (dir == 1) {
             for (let k = i; k < (i + len); k++) {
 
-                if (this.cpuBoard[k][j] !== 0) {
+                if (this.cpuGameboard[k][j] !== 0) {
                     return false;
                 }
 
@@ -256,7 +446,7 @@ class PlayBattleship {
         } else if (dir == 2) {
             for (let k = j; k > (j - len); k--) {
 
-                if (this.cpuBoard[i][k] !== 0) {
+                if (this.cpuGameboard[i][k] !== 0) {
                     return false;
                 };
 
@@ -265,7 +455,7 @@ class PlayBattleship {
         } else if (dir == 3) {
             for (let k = j; k < (j + len); k++) {
 
-                if (this.cpuBoard[i][k] !== 0) {
+                if (this.cpuGameboard[i][k] !== 0) {
                     return false;
                 };
 
@@ -276,7 +466,7 @@ class PlayBattleship {
     }
 
     /**
-     * Places 1s to represent ship on this.cpuBoard
+     * Places 1s to represent ship on this.cpuGameboard
      * @param {String}
      * @param {Number} i row index of stern
      * @param {Number} j column index of stern
@@ -288,32 +478,36 @@ class PlayBattleship {
         if (dir == 0) {
 
             for (let k = i; k >= (i - len); k--) {
-                this.cpuBoard[k][j] = 1;
-                this.cpuShipLocations[ship].push([k, j]);
+                this.cpuGameboard[k][j] = 1;
+                this.cpuShipLocations[k + "" + j] = ship;
+                // this.cpuShipLocations[ship].push([k, j]);
             }
 
             // If dir == 1 == down
         } else if (dir == 1) {
 
             for (let k = i; k <= (i + len); k++) {
-                this.cpuBoard[k][j] = 1;
-                this.cpuShipLocations[ship].push([k, j]);
+                this.cpuGameboard[k][j] = 1;
+                this.cpuShipLocations[k + "" + j] = ship;
+                // this.cpuShipLocations[ship].push([k, j]);
             }
 
             // If dir == 2 == left
         } else if (dir == 2) {
 
             for (let k = j; k >= (j - len); k--) {
-                this.cpuBoard[i][k] = 1;
-                this.cpuShipLocations[ship].push([i, k]);
+                this.cpuGameboard[i][k] = 1;
+                this.cpuShipLocations[i + "" + k] = ship;
+                // this.cpuShipLocations[ship].push([i, k]);
             }
 
             // If dir == 3 == right
         } else if (dir == 3) {
 
             for (let k = j; k <= (j + len); k++) {
-                this.cpuBoard[i][k] = 1;
-                this.cpuShipLocations[ship].push([i, k]);
+                this.cpuGameboard[i][k] = 1;
+                this.cpuShipLocations[i + "" + k] = ship;
+                // this.cpuShipLocations[ship].push([i, k]);
             }
 
         }

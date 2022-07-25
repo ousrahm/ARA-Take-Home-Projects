@@ -2,10 +2,178 @@
 <script type="application/javascript">
     let playBattleship = new PlayBattleship(setupBattleship.gameboard, setupBattleship.ships)
 </script>
-<div style="text-align: center; color:darkblue; margin: 10%;" class="container">
+
+<div id="start" style="text-align: center; color:darkblue; margin-top: 10%;" class="container">
     <h1>
         <span id="starter"></span> will go first. Get ready!
     </h1>
 
-    <button id="start-button" style="margin-top:3%"class="btn btn-success btn-large"><h3>Start the game!</h3></button>
+    <button id="start-button" style="margin-top:3%" class="btn btn-success btn-large">
+        <h3>Start the game!</h3>
+    </button>
+</div>
+
+<!--------------------------- EVERYTHING BELOW THIS COMMENT IS HIDDEN --------------------------------------->
+
+<!-- USER AIM DISPLAY -->
+<div id="user-aim" style="display:none;">
+    <h3 id="user-aim-main-message" style="text-align:center;">Your turn to shoot at an enemy ship!</h3>
+
+    <p class="setup-error-message" id="user-hit-before">That spot has been hit before! Please select another.</p>
+
+    <div class="container" style="margin-top: 6%;">
+        <div class="row justify-content-start">
+            <div class="col-3">
+                <h3><u>Enemy's Battleships Left</u></h3>
+                <div id="enemy-carrier" class="enemy-ship-container row justify-content-start">
+                    <h5>Carrier</h5>
+                    <div style="width:100%;" class="row">
+                        <div class="ship col"></div>
+                        <div class="ship col"></div>
+                        <div class="ship col"></div>
+                        <div class="ship col"></div>
+                        <div class="ship col"></div>
+                    </div>
+                </div>
+                <div id="enemy-battleship" class="enemy-ship-container row justify-content-start">
+                    <h5>Battleship</h5>
+                    <div style="width:80%;" class="row">
+                        <div class="ship col"></div>
+                        <div class="ship col"></div>
+                        <div class="ship col"></div>
+                        <div class="ship col"></div>
+                        <div class="w-100"></div>
+                    </div>
+                </div>
+                <div id="enemy-cruiser" class="enemy-ship-container row justify-content-start">
+                    <h5>Cruiser</h5>
+                    <div style="width:60%;" class="row">
+                        <div class="ship col"></div>
+                        <div class="ship col"></div>
+                        <div class="ship col"></div>
+                    </div>
+                </div>
+                <div id="enemy-submarine" class="enemy-ship-container row justify-content-start">
+                    <h5>Submarine</h5>
+                    <div style="width:60%;" class="row">
+                        <div class="ship col"></div>
+                        <div class="ship col"></div>
+                        <div class="ship col"></div>
+                    </div>
+                </div>
+                <div id="enemy-destroyer" class="enemy-ship-container row justify-content-start">
+                    <h5>Destroyer</h5>
+                    <div style="width:40%;" class="row">
+                        <div class="ship col"></div>
+                        <div class="ship col"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div id="user-hitboard" style="min-width: 500px;" class="row">
+                </div>
+            </div>
+            <div class="col">
+                <div style="border:black 1px solid; border-radius: 5%;" class="row">
+                    <div class="container">
+                        <h5>How to Shoot</h5>
+                        <ol>
+                            <li>
+                                Select a square from the map that has not been shot yet. You only get one hit!
+                            </li>
+                            <li>
+                                Press <strong>Continue</strong> when ready to move on!
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+                <div style="margin-top:5%" class="row">
+                    <button id="user-aim-continue-button" class="btn btn-success btn-lg btn-block">Continue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CPU AIM DISPLAY -->
+
+<div id="cpu-aim" style="display:none;">
+    <h3 style="text-align:center;">The enemy's turn to shoot at your ships!</h3>
+    <div class="container" style="margin-top: 6%;">
+        <div class="row justify-content-start">
+            <div class="col-3">
+                <h3><u>Your Battleships Left</u></h3>
+                <div id="user-carrier" class="user-ship-container row justify-content-start">
+                    <h5>Carrier</h5>
+                    <div style="width:100%;" class="row">
+                        <div class="ship col"></div>
+                        <div class="ship col"></div>
+                        <div class="ship col"></div>
+                        <div class="ship col"></div>
+                        <div class="ship col"></div>
+                    </div>
+                </div>
+                <div id="user-battleship" class="user-ship-container row justify-content-start">
+                    <h5>Battleship</h5>
+                    <div style="width:80%;" class="row">
+                        <div class="ship col"></div>
+                        <div class="ship col"></div>
+                        <div class="ship col"></div>
+                        <div class="ship col"></div>
+                        <div class="w-100"></div>
+                    </div>
+                </div>
+                <div id="user-cruiser" class="user-ship-container row justify-content-start">
+                    <h5>Cruiser</h5>
+                    <div style="width:60%;" class="row">
+                        <div class="ship col"></div>
+                        <div class="ship col"></div>
+                        <div class="ship col"></div>
+                    </div>
+                </div>
+                <div id="user-submarine" class="user-ship-container row justify-content-start">
+                    <h5>Submarine</h5>
+                    <div style="width:60%;" class="row">
+                        <div class="ship col"></div>
+                        <div class="ship col"></div>
+                        <div class="ship col"></div>
+                    </div>
+                </div>
+                <div id="user-destroyer" class="user-ship-container row justify-content-start">
+                    <h5>Destroyer</h5>
+                    <div style="width:40%;" class="row">
+                        <div class="ship col"></div>
+                        <div class="ship col"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div id="user-gameboard" style="min-width: 500px;" class="row">
+                </div>
+            </div>
+            <div class="col">
+                <div style="border:black 1px solid; border-radius: 5%;" class="row">
+                    <div class="container">
+                        <h5>How to Be Shot At</h5>
+                        <ol>
+                            <li>
+                                Do nothing and stand still! The CPU gets one shot.
+                            </li>
+                            <li>
+                                Press <strong>Continue</strong> when ready to move on!
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+                <div style="display:none; margin-top:5%" class="row">
+                    <button id="enemy-aim-continue-button" class="btn btn-success btn-lg btn-block">Continue</button>
+                </div>
+                <div style="margin-top:5%" class="row">
+                    <button id="enemy-aim-shoot-button" class="btn btn-success btn-lg btn-block">Let the enemy
+                        shoot!</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
 </div>
