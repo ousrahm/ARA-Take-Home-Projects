@@ -229,6 +229,29 @@ class PlayBattleship {
     }
 
     /**
+     * Colors ships on user-aim based on this.cpuShipLeft
+     */
+    colorShipsLeft(player) {
+        let shipsLeft, idStart;
+        if (player === "User") {
+            shipsLeft = this.cpuShipLeft;
+            idStart = "#user-";
+        } else if (player === "CPU") {
+            shipsLeft = this.userShipLeft;
+            idStart = "#cpu-"
+        }
+
+        for (let k = 0; k < 5; k++) {
+            let ship = this.shipNames[k];
+            let left = shipsLeft[ship];
+            for (let l = this.ships[ship].length - left; l > 0; l--) {
+                let id = idStart+ship+l;
+                $(id).css("background-color", "red");
+            }
+        }
+    }
+
+    /**
      * Renders board's rows
      * @param {String} boardID id of board DOM element
      */
@@ -389,6 +412,9 @@ class PlayBattleship {
 
         // Display message
         $("#user-aim-main-message").empty().append(message);
+    
+        // Color the squares that have been hit red
+        this.colorShipsLeft("User");
 
         // Change game's turn
         this.turn = this.Turns.CPU;
@@ -399,6 +425,7 @@ class PlayBattleship {
         $(document).one("click", "#user-aim-continue-button", { self: self }, function () {
             self.handleGameFlow();
         })
+
 
     }
 
@@ -759,6 +786,9 @@ class PlayBattleship {
 
         // Display message
         $("#enemy-aim-main-message").empty().append(message);
+
+        // Color ships
+        this.colorShipsLeft("CPU");
 
         // Change the turn to user
         this.turn = this.Turns.USER;
