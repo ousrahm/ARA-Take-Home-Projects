@@ -173,9 +173,6 @@ class SetupBattleship {
         switch (this.stage) {
             // Need to select a new ship
             case 0:
-                // $("#select-message").fadeIn("slow", function () {
-                //     $("#select-message").fadeOut(1000);
-                // });
                 break;
 
             // If a square is available, place stern of ship

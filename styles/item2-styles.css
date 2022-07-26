@@ -36,14 +36,14 @@
 
 .ship-container {
     margin: 20px;
-    width:200px;
-    padding:3px;
+    width: 200px;
+    padding: 3px;
 }
 
 .enemy-ship-container {
     margin: 20px;
-    width:200px;
-    padding:3px;
+    width: 200px;
+    padding: 3px;
 }
 
 .user-ship-container {
@@ -53,14 +53,108 @@
 }
 
 .setup-error-message {
-    color:red; 
-    left: 0; 
-    right:0;
+    color: red;
+    left: 0;
+    right: 0;
     margin-left: 35%;
     margin-right: 35%;
-    text-align: center; 
-    position: fixed; 
-    display:none;
+    text-align: center;
+    position: fixed;
+    display: none;
     background-color: white;
-    padding:1%;
+    padding: 1%;
+}
+
+#item2-title {
+    text-align: center;
+    margin-top: 1.5%;
+    color: darkblue
+}
+
+#main-game-container {
+    height: 100%;
+    padding-bottom: 3%
+}
+
+#ready-to-play-div {
+    margin-top: 5%;
+    margin-bottom: 5%;
+    margin-right: 10%;
+    margin-left: 10%;
+}
+
+.rule-block {
+    padding-left: 20%;
+    padding-right: 20%;
+}
+
+.rule-block-dt {
+    margin-bottom: 1%;
+}
+
+#main-rule-div {
+    margin-right: 10%;
+    margin-left: 10%;
+}
+
+#main-rule-div-center {
+    background-color: ghostwhite;
+    border-radius: 3%;
+}
+
+#item2-ship-selection {
+    margin-top: 6%;
+}
+
+#rules-to-game-title {
+    text-align: center;
+    margin: 3%;
+}
+
+#how-to-place {
+    border: black 1px solid;
+    border-radius: 5%;
+}
+
+.setup-button {
+    margin-top: 5%;
+}
+
+#start {
+    text-align: center;
+    color: darkblue;
+    margin-top: 10%;
+}
+
+#start-button {
+    margin-top: 3%;
+}
+
+#user-aim-main-message {
+    text-align: center;
+}
+
+#enemy-aim-main-message {
+    text-align: center;
+}
+
+.how-to-shoot {
+    border: black 1px solid;
+    border-radius: 5%;
+}
+
+#user-aim-continue {
+    margin-top: 5%;
+}
+
+#end-of-game-reload {
+    padding-top: 12%;
+    color: darkblue;
+    text-align: center;
+}
+
+#end-of-game-message {
+    text-align: center;
+    padding-top: 8%;
+    color: white;
 }

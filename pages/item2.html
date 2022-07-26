@@ -1,21 +1,20 @@
 <script src="js/item2.js"></script>
-<h1 style="text-align: center; margin-top:1.5%; color:darkblue">Battleship Game</h1>
-<div style="height:100%; padding-bottom:3%" id="main-game-container">
+<h1 id="item2-title">Battleship Game</h1>
+<div id="main-game-container">
     <p style="text-align: center; color:darkblue">Play Battleship against a CPU opponent! Be the first to sink all of
         your opponent's ships
         to win!</p>
 
     <div style="margin-top: 5%; color:darkblue;" class="container">
-        
-        <div style="margin-top:5%; margin-bottom:5%; margin-right:10%; margin-left:10%;" class="row">
+        <div id="ready-to-play-div" class="row">
             <button id="ready-to-play" type="button" class="btn btn-success btn-lg btn-block">Ready to play!</button>
         </div>
-        <div style="margin-right:10%; margin-left:10%;" class="row">
-            <div style="background-color:ghostwhite; border-radius: 3%;" class="col align-self-center">
-                <h3 style="text-align: center; margin:3%;">Rules to the Game</h3>
-                <div style="padding-left:20%; padding-right:20%;" class="row">
+        <div id="main-rule-div" class="row">
+            <div id="main-rule-div-center" class="col align-self-center">
+                <h3 id="rules-to-game-title">Rules to the Game</h3>
+                <div class="rule-block row">
                     <dl>
-                        <dt style="margin-bottom:1%;"><span class="tab"><u>About Battleship</u></dt>
+                        <dt class="rule-block-dt"><span class="tab"><u>About Battleship</u></dt>
                         <dd>- Before play begins, you must arrange your ships on your primary grid.
                         <dd>- Each ship occupies a number of consecutive squares on the grid, arranged either
                             horizontally
@@ -25,9 +24,9 @@
                             player. </dd>
                     </dl>
                 </div>
-                <div style="padding-left:20%; padding-right:20%;" class="row">
+                <div class="rule-block row">
                     <dl>
-                        <dt style="margin-bottom:1%;"><span class="tab"><u>How to Play</u></dt>
+                        <dt class="rule-block-dt"><span class="tab"><u>How to Play</u></dt>
                         <dd>- After the ships have been positioned, the game proceeds in a series of rounds.</dd>
                         <dd>- In each round, each player selects a target square to shoot at. </dd>
                         <dd>- If an enemy ship is occupying that square, that square will turn red. If no enemy ship is
