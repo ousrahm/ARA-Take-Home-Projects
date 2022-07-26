@@ -1,12 +1,12 @@
 # ARA-Take-Home-Projects
 
 **Main Files**
-    - index.html
-      - holds head and body of website (rest of site is dynamically loaded using jQuery)
-    - functions.js
-      - holds functionality for navbar, home page, and page navigation
-    - styles.css
-      - holds general css for elements, navbar, and home page
+- index.html
+  - holds head and body of website (rest of site is dynamically loaded using jQuery)
+- functions.js
+  - holds functionality for navbar, home page, and page navigation
+- styles.css
+  - holds general css for elements, navbar, and home page
 
 **Item 1**
 - Write a function which iterates through an integer array and returns the sum of the values in the array.
