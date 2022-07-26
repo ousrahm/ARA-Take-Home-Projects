@@ -166,9 +166,6 @@ class SetupBattleship {
 
         // If no ship is selected, show select message.
         if (this.currentShip == "") {
-            $("#select-message").fadeIn("slow", function () {
-                $("#select-message").fadeOut(1000);
-            });
             return;
         }
 
