@@ -176,9 +176,9 @@ class SetupBattleship {
         switch (this.stage) {
             // Need to select a new ship
             case 0:
-                $("#select-message").fadeIn("slow", function () {
-                    $("#select-message").fadeOut(1000);
-                });
+                // $("#select-message").fadeIn("slow", function () {
+                //     $("#select-message").fadeOut(1000);
+                // });
                 break;
 
             // If a square is available, place stern of ship
@@ -505,10 +505,6 @@ class SetupBattleship {
 
         
         // Add listener to ready button
-        /**
-         * ADDS MULTIPLE LISTENERS
-         * USE DATA() TO CHECK FOR CLICK EVENTS BEFORE ADDING
-         */
         $(document).off("click", "#ready-board").one("click", "#ready-board", { self: self }, function () {
             self.readyBoard();
         });
