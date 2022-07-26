@@ -1,8 +1,9 @@
-<script src="js/playBattleship.js"></script>
 <script type="application/javascript">
-
-    console.log(setupBattleship)
-    let playBattleship = new PlayBattleship(setupBattleship.gameboard, setupBattleship.ships)
+    if (typeof playBattleship === "undefined") {
+        var playBattleship = new PlayBattleship(setupBattleship.gameboard, setupBattleship.ships)
+    } else {
+        playBattleship.resetGame(setupBattleship.gameboard, setupBattleship.ships);
+    }
 </script>
 
 <div id="start" style="text-align: center; color:darkblue; margin-top: 10%;" class="container">
@@ -26,48 +27,48 @@
     <div class="container" style="margin-top: 1%;">
         <div class="row justify-content-start">
             <div class="col-3">
-                <h3><u>Enemy's Battleships Left</u></h3>
+                <h3><u>Enemy Battleships Left</u></h3>
                 <div id="enemy-carrier" class="enemy-ship-container row justify-content-start">
                     <h5>Carrier</h5>
                     <div style="width:100%;" class="row">
-                        <div class="ship col"></div>
-                        <div class="ship col"></div>
-                        <div class="ship col"></div>
-                        <div class="ship col"></div>
-                        <div class="ship col"></div>
+                        <div class="carrier1 ship col"></div>
+                        <div class="carrier2 ship col"></div>
+                        <div class="carrier3 ship col"></div>
+                        <div class="carrier4 ship col"></div>
+                        <div class="carrier5 ship col"></div>
                     </div>
                 </div>
                 <div id="enemy-battleship" class="enemy-ship-container row justify-content-start">
                     <h5>Battleship</h5>
                     <div style="width:80%;" class="row">
-                        <div class="ship col"></div>
-                        <div class="ship col"></div>
-                        <div class="ship col"></div>
-                        <div class="ship col"></div>
+                        <div class="battleship1 ship col"></div>
+                        <div class="battleship2 ship col"></div>
+                        <div class="battleship3 ship col"></div>
+                        <div class="battleship4 ship col"></div>
                         <div class="w-100"></div>
                     </div>
                 </div>
                 <div id="enemy-cruiser" class="enemy-ship-container row justify-content-start">
                     <h5>Cruiser</h5>
                     <div style="width:60%;" class="row">
-                        <div class="ship col"></div>
-                        <div class="ship col"></div>
-                        <div class="ship col"></div>
+                        <div class="cruiser1 ship col"></div>
+                        <div class="cruiser2 ship col"></div>
+                        <div class="cruiser3 ship col"></div>
                     </div>
                 </div>
                 <div id="enemy-submarine" class="enemy-ship-container row justify-content-start">
                     <h5>Submarine</h5>
                     <div style="width:60%;" class="row">
-                        <div class="ship col"></div>
-                        <div class="ship col"></div>
-                        <div class="ship col"></div>
+                        <div class="submarine1 ship col"></div>
+                        <div class="submarine2 ship col"></div>
+                        <div class="submarine3 ship col"></div>
                     </div>
                 </div>
                 <div id="enemy-destroyer" class="enemy-ship-container row justify-content-start">
                     <h5>Destroyer</h5>
                     <div style="width:40%;" class="row">
-                        <div class="ship col"></div>
-                        <div class="ship col"></div>
+                        <div class="destroyer1 ship col"></div>
+                        <div class="destroyer2 ship col"></div>
                     </div>
                 </div>
             </div>

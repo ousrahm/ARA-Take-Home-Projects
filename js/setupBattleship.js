@@ -456,24 +456,26 @@ class SetupBattleship {
      * Resets gameboard and all setupBattleship properties
      */
     resetBoard() {
-
-        // Change all squares back to white with black border
-        for (let k = 0; k < this.gameboard.length; k++) {
-            for (let l = 0; l < this.gameboard[0].length; l++) {
-                const id = "#sq" + k + "" + l;
-                this.colorSquare(id, "white");
-                this.highlightSquare(id, "black");
-
-                // If square is missing the setup-gameboard class, add it again.
-                if (!$(id).attr("class").includes("setup-gameboard-square")) {
-                    $(id).addClass("setup-gameboard-square");
-                }
-            }
-        }
-
         // Reset gameboard
         this.gameboard = [];
         this.setupGameboard();
+        $("#setup-gameboard").empty();
+        this.setupGameboardHTML();
+        // // Change all squares back to white with black border
+        // for (let k = 0; k < this.gameboard.length; k++) {
+        //     for (let l = 0; l < this.gameboard[0].length; l++) {
+        //         const id = "#sq" + k + "" + l;
+        //         this.colorSquare(id, "white");
+        //         this.highlightSquare(id, "black");
+
+        //         // If square is missing the setup-gameboard class, add it again.
+        //         if (!$(id).attr("class").includes("setup-gameboard-square")) {
+        //             $(id).addClass("setup-gameboard-square");
+        //         }
+        //     }
+        // }
+
+
 
         // Change all ships back to default
         this.ships = {
@@ -499,6 +501,16 @@ class SetupBattleship {
         var self = this;
         $(document).one("click", "#reset-board", { self: self }, function () {
             self.resetBoard();
+        });
+
+        
+        // Add listener to ready button
+        /**
+         * ADDS MULTIPLE LISTENERS
+         * USE DATA() TO CHECK FOR CLICK EVENTS BEFORE ADDING
+         */
+        $(document).off("click", "#ready-board").one("click", "#ready-board", { self: self }, function () {
+            self.readyBoard();
         });
 
     }
