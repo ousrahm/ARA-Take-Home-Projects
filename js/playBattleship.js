@@ -66,6 +66,39 @@ class PlayBattleship {
         this.cpuLastHit = [];
     }
 
+    resetGame(gameboard, ships) {
+
+         this.ships = ships;
+         this.cpuShipLocations = {};
+         this.userShipLocations = this.initUserShipLocations();
+         this.cpuShipLeft = {
+             carrier: 5,
+             battleship: 4,
+             cruiser: 3,
+             submarine: 3,
+             destroyer: 2
+         }
+         this.userShipLeft = {
+             carrier: 5,
+             battleship: 4,
+             cruiser: 3,
+             submarine: 3,
+             destroyer: 2
+         }
+         this.turn;
+         this.Turns = {
+             CPU: "CPU",
+             USER: "USER"
+         }
+         this.userGameboard = gameboard;
+         this.cpuGameboard = [];
+         this.simulateCpuGameboard();
+         this.userHitboard = this.createBoard();
+         this.cpuHitboard = this.createBoard();
+         this.startGame(this.getRandomInt(2));
+         this.cpuLastHit = [];
+    }
+
 
     /**
      * Converts locations from ships object to correct format for userShipLocations
@@ -92,8 +125,6 @@ class PlayBattleship {
         const starterMessage = (rand === 0 ? `<strong>You</strong>` : `The <strong>enemy</strong>`);
         this.turn = (rand === 0 ? this.Turns.USER : this.Turns.CPU);
         this.starter = this.turn;
-        console.log("STARTER: "+this.starter)
-        console.log("Turn: " + this.turn)
 
         // Add starter to start message
         $("#starter").append(starterMessage);
@@ -112,7 +143,6 @@ class PlayBattleship {
      * Depending on stage, display appropriate HTML and display correct board
      */
     handleGameFlow() {
-        console.log("handleGameFlow")
 
         // If the non-starter just finished their turn
         if (this.turn == this.starter) {
@@ -159,16 +189,11 @@ class PlayBattleship {
 
         const cpuFleetSunk = Object.keys(this.cpuShipLocations).length == 0;
         const userFleetSunk = Object.keys(this.userShipLocations).length == 0;
-        console.log("cpuFleetSunk"+cpuFleetSunk)
-        console.log("userFleetSunk"+userFleetSunk)
 
         // Game is not finished
         if (!cpuFleetSunk && !userFleetSunk) {
-            
-            console.log("All good")
             return false;
         }
-        console.log("Uh-oh")
 
         // Hide both displays
         $("#user-aim").hide();
@@ -240,7 +265,7 @@ class PlayBattleship {
             // Add listener to "Let enemy shoot!" button if CPU's turn to hit
         } else if (boardID === "#user-gameboard") {
             $(document).one("click", "#enemy-aim-shoot-button", { self: self }, function () {
-                self.simulateCpuHit();
+                self.simulateCpuShot();
             })
         }
     }
@@ -612,23 +637,9 @@ class PlayBattleship {
     }
 
     /**
-     * Check if last 
-     * Generates random i, j.
-     * Checks if spot has been already targeted at on own hitboard:
-     *      Not hit: continue
-     *      Hit: generate new random i, j
-     * Check user board for ship (on userboard: 1 if ship, 0 if missed)
-     *      Hit: display message that enemy has hit one ship
-     *          change userboard at spot to -1
-     *          change cpu hitboard at spot to 1
-     *          check if whole ship has been sunk
-     *              Sunk: display message, enemy has sunk your ship
-     *              Not sunk: do nothing
-     *      Missed: display message that enemy has missed your ship
-     *            change cpu hitboard at spot to -1
-     * Continue with game
+     *  Simulate CPU Shot on User hit
      */
-    simulateCpuHit() {
+    simulateCpuShot() {
 
         let i, j;
 
@@ -759,4 +770,5 @@ class PlayBattleship {
             self.handleGameFlow();
         })
     }
+
 }

@@ -1,11 +1,11 @@
-<script src="js/setupBattleship.js"></script>
-<script type="application/javascript">
-    console.log(typeof setupBattleship);
-    if (typeof setupBattleship === "undefined") {
-        var setupBattleship = new SetupBattleship();
-    }
-</script>
 
+    <script type="application/javascript">
+        if (typeof setupBattleship === "undefined") {
+            var setupBattleship = new SetupBattleship();
+        } else {
+            setupBattleship.resetBoard();
+        }
+    </script>
 
 <h5 style="text-align:center;">Time to place your ships!</h5>
 <p class="setup-error-message" id="select-message">Please select a ship first!</p>
