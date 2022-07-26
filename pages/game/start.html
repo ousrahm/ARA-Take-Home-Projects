@@ -6,12 +6,12 @@
     }
 </script>
 
-<div id="start" style="text-align: center; color:darkblue; margin-top: 10%;" class="container">
+<div id="start" class="container">
     <h1>
         <span id="starter"></span> will go first. Get ready!
     </h1>
 
-    <button id="start-button" style="margin-top:3%" class="btn btn-success btn-large">
+    <button id="start-button" class="btn btn-success btn-large">
         <h3>Start the game!</h3>
     </button>
 </div>
@@ -20,7 +20,7 @@
 
 <!-- USER AIM DISPLAY -->
 <div id="user-aim" style="display:none;">
-    <h3 id="user-aim-main-message" style="text-align:center;">Your turn to shoot at an enemy ship!</h3>
+    <h3 id="user-aim-main-message">Your turn to shoot at an enemy ship!</h3>
 
     <p class="setup-error-message" id="user-hit-before">That spot has been hit before! Please select another.</p>
 
@@ -76,7 +76,7 @@
                 </div>
             </div>
             <div class="col">
-                <div style="border:black 1px solid; border-radius: 5%;" class="row">
+                <div class="how-to-shoot" class="row">
                     <div class="container">
                         <h5>How to Shoot</h5>
                         <ol>
@@ -89,7 +89,7 @@
                         </ol>
                     </div>
                 </div>
-                <div id="user-aim-continue" style="margin-top:5%" class="row">
+                <div id="user-aim-continue" class="row">
                     <button id="user-aim-continue-button" class="btn btn-success btn-lg btn-block">Continue</button>
                 </div>
             </div>
@@ -153,7 +153,7 @@
                 </div>
             </div>
             <div class="col">
-                <div style="border:black 1px solid; border-radius: 5%;" class="row">
+                <div class="how-to-shoot" class="row">
                     <div class="container">
                         <h5>How to Be Shot At</h5>
                         <ol>
@@ -181,8 +181,8 @@
 
 <!-- WINNER/LOSER/DRAW DISPLAY -->
 <div style="display:none;" id="end-of-game">
-    <h2 style="text-align: center; padding-top: 8%; color: white;" id="end-of-game-message"></h2>
-    <p style="padding-top: 12%; color:darkblue; text-align: center;" id="end-of-game-reload"><u>Reload the site to play
+    <h2 id="end-of-game-message"></h2>
+    <p id="end-of-game-reload"><u>Reload the site to play
             again!</u></p>
 
 </div>
